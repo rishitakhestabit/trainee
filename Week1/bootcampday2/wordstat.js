@@ -14,21 +14,16 @@ const top = Number(get_arg("--top")) || 10
 const minlen = Number(get_arg("--minLen")) || 1
 const unique = args.includes("--unique")
 
-function run_worker(text, minlen) {
+function run_worker(chunk, minlen) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(path.resolve(__dirname, "worker.js"), {
-      workerData: { text, minlen }
-    })
-
+    const worker = new Worker(path.resolve(__dirname, "worker.js"))
+    worker.postMessage({ text: chunk, minlen })
     worker.on("message", resolve)
     worker.on("error", reject)
-    worker.on("exit", code => {
-      if (code !== 0) reject(new Error("worker error"))
-    })
   })
 }
 
-async function process_file_concurrent(filepath, minlen, concurrency) {
+async function process_file(filepath, minlen, concurrency) {
   const data = fs.readFileSync(filepath, "utf8")
   const size = Math.ceil(data.length / concurrency)
   const chunks = []
@@ -67,7 +62,7 @@ function merge_results(results) {
 async function run(concurrency) {
   const start = Date.now()
 
-  const results = await process_file_concurrent(file, minlen, concurrency)
+  const results = await process_file(file, minlen, concurrency)
   const merged = merge_results(results)
 
   const top_words = Object.entries(merged.final_freq)
@@ -82,8 +77,7 @@ async function run(concurrency) {
     top_words
   }
 
-  const duration = Date.now() - start
-  return { result, duration }
+  return { result, duration: Date.now() - start }
 }
 
 async function main() {
@@ -99,17 +93,13 @@ async function main() {
 
   for (const concurrency of [1, 4, 8]) {
     const { result, duration } = await run(concurrency)
-
-    summary[`concurrency_${concurrency}`] = {
-      duration_ms: duration
-    }
+    summary[`concurrency_${concurrency}`] = { duration_ms: duration }
 
     if (concurrency === 1) {
       fs.writeFileSync(
         "output/stats.json",
         JSON.stringify(result, null, 2)
       )
-
       console.log(JSON.stringify(result, null, 2))
     }
   }

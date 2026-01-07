@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = require("path")
+const { Worker } = require("worker_threads")
 
 const args = process.argv.slice(2)
 
@@ -13,29 +14,18 @@ const top = Number(get_arg("--top")) || 10
 const minlen = Number(get_arg("--minLen")) || 1
 const unique = args.includes("--unique")
 
-function process_chunk(text, minlen) {
-  const words = text
-    .toLowerCase()
-    .split(/\W+/)
-    .filter(w => w.length >= minlen)
+function run_worker(text, minlen) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(path.resolve(__dirname, "worker.js"), {
+      workerData: { text, minlen }
+    })
 
-  const freq = {}
-  let longest = ""
-  let shortest = words[0] || ""
-
-  for (const word of words) {
-    freq[word] = (freq[word] || 0) + 1
-
-    if (word.length > longest.length) longest = word
-    if (word.length < shortest.length) shortest = word
-  }
-
-  return {
-    freq,
-    longest,
-    shortest,
-    count: words.length
-  }
+    worker.on("message", resolve)
+    worker.on("error", reject)
+    worker.on("exit", code => {
+      if (code !== 0) reject(new Error("worker error"))
+    })
+  })
 }
 
 async function process_file_concurrent(filepath, minlen, concurrency) {
@@ -48,9 +38,7 @@ async function process_file_concurrent(filepath, minlen, concurrency) {
   }
 
   const results = await Promise.all(
-    chunks.map(chunk =>
-      Promise.resolve(process_chunk(chunk, minlen))
-    )
+    chunks.map(chunk => run_worker(chunk, minlen))
   )
 
   return results
@@ -133,4 +121,3 @@ async function main() {
 }
 
 main()
-

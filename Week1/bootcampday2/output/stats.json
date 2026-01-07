@@ -1,0 +1,48 @@
+{
+  "total_words": 126316,
+  "unique_words": 12,
+  "longest_word": "consectetur",
+  "shortest_word": "lorem",
+  "top_words": [
+    [
+      "lorem",
+      10527
+    ],
+    [
+      "ipsum",
+      10527
+    ],
+    [
+      "dolor",
+      10527
+    ],
+    [
+      "consectetur",
+      10527
+    ],
+    [
+      "adipiscing",
+      10526
+    ],
+    [
+      "eiusmod",
+      10526
+    ],
+    [
+      "tempor",
+      10526
+    ],
+    [
+      "incididunt",
+      10526
+    ],
+    [
+      "labore",
+      10526
+    ],
+    [
+      "dolore",
+      10526
+    ]
+  ]
+}

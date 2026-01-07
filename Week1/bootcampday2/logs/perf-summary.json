@@ -1,11 +1,11 @@
 {
   "concurrency_1": {
-    "duration_ms": 59
+    "duration_ms": 27
   },
   "concurrency_4": {
-    "duration_ms": 39
+    "duration_ms": 18
   },
   "concurrency_8": {
-    "duration_ms": 33
+    "duration_ms": 17
   }
 }

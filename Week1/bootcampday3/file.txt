@@ -1,0 +1,7 @@
+Bootcamp Day 3 – Git Practice
+
+This folder contains a reference to my Day 3 Git assignment.
+
+Repository link:
+https://github.com/rishitakhestabit/bootcampday3
+

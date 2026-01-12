@@ -8,10 +8,6 @@ The goal of Day 3 was to build confidence in handling real-world Git problems su
 ## Repository Setup
 A Git repository was initialized and developed through a sequence of commits. Changes were made incrementally to simulate a realistic development timeline. One commit intentionally introduced a bug to practice recovery techniques.
 
----
-
-## Commit Discipline
-Each change was committed with a clear message describing the intent. This helped maintain a readable history and made debugging and rollback operations predictable.
 
 ---
 

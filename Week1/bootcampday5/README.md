@@ -65,7 +65,7 @@ To prevent invalid or poorly formatted code from ever being committed.
 3. Execution of `validate.sh`
 
 **Why this matters:**  
-Developers get immediate feedback before a commit is created, which keeps the repository history clean and reduces future rollbacks.
+We get immediate feedback before a commit is created, which keeps the repository history clean and reduces future rollbacks.
 
 ---
 

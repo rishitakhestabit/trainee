@@ -93,15 +93,6 @@ Basic accessibility practices are followed:
 
 ---
 
-## How to Run the Project
-
-1. Open the project folder in VS Code
-2. Open the `.html` file
-3. Right-click and select **Open with Live Server**  
-   or  
-   Double-click the HTML file to open it in a browser
-
----
 
 ## Author
 

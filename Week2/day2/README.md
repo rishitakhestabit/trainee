@@ -63,8 +63,8 @@ I translated the abstract layout into a real-world website by mapping each block
 ![Assignment Layout](images/assignment.png)
 
 ### My Implemented Page
-![Final Output](images/website1.png)
-![Final Output](images/website2.png)
+![Final Output](images/websitep1.png)
+![Final Output](images/websitep2.png)
 
 ---
 

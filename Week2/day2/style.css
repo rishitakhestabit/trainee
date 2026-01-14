@@ -1,0 +1,257 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Georgia, serif;
+  background: #f7f5fb;
+  color: #1f1f1f;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  padding: 0 64px;
+  background: #4b1f78;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 38px;
+  width: auto;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  margin-left: auto;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.menu a {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: #f4ecff;
+  text-decoration: none;
+  padding: 6px 0;
+}
+
+
+.herosec {
+  height: 420px;
+  background:
+    linear-gradient(rgba(43,18,76,0.7), rgba(43,18,76,0.7)),
+    url("images/mountain.png");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 820px;
+}
+
+.hero-content h1 {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.hero-content h3 {
+  font-size: 20px;
+  font-weight: normal;
+  margin-bottom: 16px;
+  color: #e6d8ff;
+}
+
+.hero-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.hero-tag {
+  font-size: 14px;
+  color: #ffd6ff;
+  letter-spacing: 1px;
+}
+
+.content {
+  padding: 50px 70px;
+}
+
+.treks {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.trek-detail {
+  display: flex;
+  gap: 36px;
+  background: #f2ebfa;
+  border-radius: 18px;
+  padding: 36px;
+  align-items: center;
+  border-left: 6px solid #8e5cc7;
+}
+
+.trek-text {
+  flex: 2;
+}
+
+.trek-text h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: #2b124c;
+}
+
+.trek-text p {
+  font-size: 17px;
+  line-height: 1.75;
+  margin-bottom: 14px;
+  color: #4b4b63;
+}
+
+.trek-image {
+  flex: 1;
+}
+
+.trek-image img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.banner {
+  background: #2b124c;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 0 24px;
+  }
+
+  .menu {
+    gap: 18px;
+  }
+
+  .content {
+    padding: 30px 24px;
+  }
+
+  .trek-detail {
+    flex-direction: column;
+  }
+
+  .trek-image img {
+    height: 210px;
+  }
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brand-main {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-size: 30px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.brand-main .lavender {
+  color: #d8c8ff;
+}
+
+.brand-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b6a8e8;
+  margin-top: 4px;
+}
+
+.trek-cards {
+  margin-top: 90px;
+}
+
+.cards-title {
+  font-size: 30px;
+  color: #2b124c;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 26px;
+}
+
+.mini-card {
+  background: linear-gradient(
+    135deg,
+    #f3edff,
+    #ebe1ff
+  );
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(90, 45, 130, 0.15);
+  text-align: center;
+}
+
+
+.mini-card img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.mini-card h3 {
+  font-size: 18px;
+  margin: 14px 0 6px;
+  color: #5a2d82;
+}
+
+.mini-card p {
+  font-size: 14px;
+  color: #4b4b63;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -4,7 +4,7 @@
 This project is a simple travel blog webpage created using **only HTML5** as part of **Day 1 – HTML5 + Semantic Layout** assignment.  
 The blog focuses on travel vlogs and destinations in Uttarakhand, including places like **Munsiyari, Harsil, Auli**, and nearby Himalayan regions.
 
-The main goal of this project is to understand **HTML structure, semantic elements, accessibility basics, and proper documentation**, without using CSS or `<div>` tags.
+The main goal of this project is to understand **HTML structure, semantic elements, accessibility basics, without using CSS or `<div>` tags.
 
 ---
 
@@ -93,15 +93,6 @@ Basic accessibility practices are followed:
 
 ---
 
-## How to Run the Project
-
-1. Open the project folder in VS Code
-2. Open the `.html` file
-3. Right-click and select **Open with Live Server**  
-   or  
-   Double-click the HTML file to open it in a browser
-
----
 
 ## Author
 

@@ -10,7 +10,7 @@ LocalStorage expects strings but an array was stored directly.
 **Error Message**
 Uncaught SyntaxError: Unexpected token o in JSON
 
-![Error message](screenshots/image.jpg)
+![Error message](screenshots/image.png)
 
 **Cause**
 Missing JSON.stringify while saving data.
@@ -36,4 +36,4 @@ The app attempted to parse `null` using `JSON.parse()` because an incorrect
 localStorage key was used while fetching saved todos.
 
 
-![Error message](screenshots/error.jpg)
+![Error message](screenshots/error.png)

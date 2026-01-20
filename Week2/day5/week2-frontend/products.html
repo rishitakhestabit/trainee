@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Products | INFI Store</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <h1 class="logo">INFI STORE</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html" class="active">Products</a>
+    </nav>
+  </header>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <input type="text" id="searchInput" placeholder="Search products..." />
+
+    <select id="categoryFilter">
+      <option value="all">All</option>
+    </select>
+
+    <select id="sortPrice">
+      <option value="default">Sort by Price</option>
+      <option value="high">High-Low</option>
+      <option value="low">Low-High</option>
+    </select>
+  </section>
+
+  <section class="products-container" id="productsContainer">
+  </section>
+
+  <footer>
+    <p>© 2026 INFI Store</p>
+  </footer>
+
+  <script src="js/products.js"></script>
+</body>
+</html>

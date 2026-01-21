@@ -11,7 +11,7 @@ export default function Navbar() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <span className="text-xl font-semibold">Start Bootstrap</span>
+        <span className="text-xl font-semibold">ZUDEE</span>
       </div>
 
       {/* Right: Search + User */}

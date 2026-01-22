@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <nav 
       className="text-white px-4 py-3 flex items-center justify-between sticky top-0 z-50"
-      style={{ backgroundColor: '#D4A574' }}
+      style={{ backgroundColor: '#6b3944' }}
     >
       {/* Left: Brand + Hamburger */}
       <div className="flex items-center gap-3">

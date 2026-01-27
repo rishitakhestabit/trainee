@@ -101,3 +101,23 @@ const [isOpen, setIsOpen] = useState(false)
 - `onClose`: Function to close modal
 - `title`: Modal header text
 - `children`: Modal body content
+
+---
+
+## Navbar Component
+
+### Usage
+```jsx
+import Navbar from '@/components/ui/Navbar'
+
+<Navbar />
+
+
+## Sidebar Component
+## Usage
+```
+import Sidebar from '@/components/ui/Sidebar'
+<Sidebar />
+```
+The Sidebar component appears on the left side of dashboard pages.
+It contains navigation links for dashboard sections such as Dashboard, Users, Profile, and About.

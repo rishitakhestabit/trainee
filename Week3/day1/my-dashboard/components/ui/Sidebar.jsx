@@ -8,6 +8,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Users', href: '/dashboard/users' },     
     { label: 'Profile', href: '/dashboard/profile' },
     { label: 'About', href: '/about' },
   ]
@@ -17,6 +18,10 @@ export default function Sidebar() {
     { id: 'tables', label: 'Tables', href: '/dashboard/tables' },
   ]
 
+  const authItems = [
+    { label: 'Login', href: '/login' },               
+  ]
+
   const isActive = (href) => pathname === href
 
   return (
@@ -24,7 +29,7 @@ export default function Sidebar() {
       className="w-56 min-h-screen flex flex-col text-white"
       style={{ backgroundColor: '#5A1E3A' }}
     >
-      {/* Core */}
+      {/* CORE */}
       <div className="px-4 py-4">
         <p className="text-xs uppercase font-semibold mb-2 text-[#C8A882]">
           Core
@@ -48,7 +53,7 @@ export default function Sidebar() {
         </ul>
       </div>
 
-      {/* Addons */}
+      {/* ADDONS */}
       <div
         className="px-4 py-4 border-t"
         style={{ borderColor: '#7A2648' }}
@@ -63,6 +68,33 @@ export default function Sidebar() {
               <Link
                 href={item.href}
                 className="block px-3 py-2 rounded text-sm transition hover:bg-[#6B1B3D]"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* AUTH */}
+      <div
+        className="px-4 py-4 border-t mt-auto"
+        style={{ borderColor: '#7A2648' }}
+      >
+        <p className="text-xs uppercase font-semibold mb-2 text-[#C8A882]">
+          Auth
+        </p>
+
+        <ul className="space-y-1">
+          {authItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={`block px-3 py-2 rounded text-sm transition ${
+                  isActive(item.href)
+                    ? 'bg-[#E8D5B7] text-gray-800'
+                    : 'hover:bg-[#6B1B3D]'
+                }`}
               >
                 {item.label}
               </Link>

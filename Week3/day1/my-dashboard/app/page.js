@@ -1,165 +1,124 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import WelcomeModal from '@/components/ui/WelcomeModal'
-import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
-import Badge from '@/components/ui/Badge'
-import Input from '@/components/ui/Input'
+import { motion } from "framer-motion"
+import Image from "next/image"
+import Link from "next/link"
 
-
-export default function Home() {
-  const [showWelcome, setShowWelcome] = useState(false)
+export default function LandingPage() {
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-1">Dashboard</h1>
-          <nav className="text-sm">
-            <span className="text-gray-400">Dashboard</span>
-          </nav>
-        </div>
-        
-        {/* Button to open Welcome Modal */}
-        <Button 
-          variant="wine" 
-          size="md"
-          onClick={() => setShowWelcome(true)}
-        >
-          HI,CLICK ME!
-        </Button>
-      </div>
+    <div className="bg-white text-gray-800">
 
-      {/* Colored Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card title="Primary Card" variant="primary">
-          <p className="text-gray-600 mb-4">Some quick example text to build on the card title.</p>
-          <Button variant="primary" size="sm">View Details</Button>
-        </Card>
+      {/* HERO */}
+      <section className="bg-gradient-to-br from-[#5B2A42] to-[#8C2F4E] text-white">
+        <div className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
 
-        <Card title="Warning Card" variant="warning">
-          <p className="text-gray-600 mb-4">Some quick example text to build on the card title.</p>
-          <Button variant="warning" size="sm">View Details</Button>
-        </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
+              A Powerful Dashboard For Modern Businesses
+            </h1>
 
-        <Card title="Success Card" variant="success">
-          <p className="text-gray-600 mb-4">Some quick example text to build on the card title.</p>
-          <Button variant="success" size="sm">View Details</Button>
-        </Card>
+            <p className="text-lg text-gray-200 mb-8">
+              Track analytics, manage users, monitor performance, and grow your
+              business, all in one elegant platform.
+            </p>
 
-        <Card title="Danger Card" variant="danger">
-          <p className="text-gray-600 mb-4">Some quick example text to build on the card title.</p>
-          <Button variant="danger" size="sm">View Details</Button>
-        </Card>
-      </div>
+            <Link href="/dashboard">
+              <button className="bg-white text-[#8C2F4E] px-6 py-3 rounded-lg font-semibold shadow-lg
+              hover:scale-105 hover:shadow-xl transition-all duration-300">
+                Enter Dashboard
+              </button>
+            </Link>
+          </motion.div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Area Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-            </svg>
-            Area Chart Example
-          </h3>
-          <div className="h-64 bg-gradient-to-b from-blue-100 to-blue-50 rounded flex items-center justify-center border border-blue-200">
-            <p className="text-gray-500">Chart visualization area</p>
+          {/* IMAGE */}
+          <div className="relative w-full h-80 md:h-[400px] hover:scale-105 transition-transform duration-500">
+            <Image
+              src="/dashboard-preview.png"
+              alt="Dashboard Preview"
+              fill
+              className="object-contain drop-shadow-2xl"
+            />
           </div>
+
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-20 bg-gray-50">
+        <div className="text-center mb-14 px-6">
+          <h2 className="text-3xl font-bold mb-3">Everything You Need</h2>
+          <p className="text-gray-600">
+            Built for teams who want speed, clarity, and performance.
+          </p>
         </div>
 
-        {/* Bar Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Bar Chart Example
-          </h3>
-          <div className="h-64 bg-gradient-to-b from-blue-100 to-blue-50 rounded flex items-center justify-center border border-blue-200">
-            <p className="text-gray-500">Chart visualization area</p>
-          </div>
-        </div>
-      </div>
-
-      {/* DataTable */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b">
-          <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            DataTable Example
-          </h3>
-        </div>
-        
-        <div className="px-6 py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Show</span>
-              <select className="border border-gray-300 rounded px-3 py-1 text-sm">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-                <option>100</option>
-              </select>
-              <span className="text-sm text-gray-600">entries</span>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
+          {[
+            { title: "Analytics", desc: "Real-time insights and tracking." },
+            { title: "User Control", desc: "Role-based access management." },
+            { title: "Smart Reports", desc: "Export reports instantly." },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="bg-white p-8 rounded-xl shadow hover:shadow-xl
+              hover:-translate-y-2 transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold mb-3 text-[#8C2F4E]">
+                {item.title}
+              </h3>
+              <p className="text-gray-600">{item.desc}</p>
             </div>
-            
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <label className="text-sm text-gray-600">Search:</label>
-              <Input 
-                type="search" 
-                placeholder="Search..."
-                className="w-full sm:w-64"
-              />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Position</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Office</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Age</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 text-sm text-gray-800">Rishita Kumar</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Technical Trainee</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Mumbai</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">22</td>
-                  <td className="px-4 py-3"><Badge variant="success">Active</Badge></td>
-                </tr>
-                <tr className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 text-sm text-gray-800">Harshit Sharma</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Accountant</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Delhi</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">63</td>
-                  <td className="px-4 py-3"><Badge variant="warning">Pending</Badge></td>
-                </tr>
-                <tr className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 text-sm text-gray-800">Niharika Singh</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Junior Technical Author</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Noida</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">23</td>
-                  <td className="px-4 py-3"><Badge variant="success">Active</Badge></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          ))}
         </div>
-      </div>
+      </section>
 
-      <WelcomeModal 
-        isOpen={showWelcome}
-        onClose={() => setShowWelcome(false)}
-      />
+      {/* TESTIMONIALS */}
+      <section className="py-20">
+        <div className="text-center mb-14 px-6">
+          <h2 className="text-3xl font-bold">Trusted by Growing Teams</h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
+          {[
+            {
+              name: "Rishita Kumar",
+              text: "This dashboard helped our team track everything in one place.",
+            },
+            {
+              name: "Harshit Sharma",
+              text: "Clean design and powerful features.",
+            },
+            {
+              name: "Niharika Singh",
+              text: "Analytics tools saved us hours of work.",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="bg-white p-8 rounded-xl shadow border
+              hover:scale-105 transition-transform duration-300"
+            >
+              <p className="text-gray-600 mb-4">“{item.text}”</p>
+              <h4 className="font-semibold text-[#8C2F4E]">{item.name}</h4>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="bg-[#5B2A42] text-gray-200 py-10">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h3 className="text-xl font-semibold mb-2">Zudee Dashboard</h3>
+          <p className="text-gray-400 text-sm">
+            © {new Date().getFullYear()} Zudee. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
     </div>
   )
 }

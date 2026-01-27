@@ -1,49 +1,73 @@
-'use client'
-
-import { useState } from 'react'
+import Image from "next/image"
+import Link from "next/link"
+import Button from "@/components/ui/Button"
 
 export default function ProfilePage() {
-  const [name, setName] = useState('Rishita Kumar')
-  const [email, setEmail] = useState('rishita@zudee.com')
-
   return (
-    <div>
-      <h1 className="text-xl font-medium">
-        Profile
-      </h1>
+    <div className="space-y-6">
 
-      <p className="text-sm text-gray-500">
-        Edit your basic information
-      </p>
+      {/* Back */}
+      <Link
+        href="/dashboard"
+        className="text-sm text-[#8C2F4E] hover:underline"
+      >
+        ← Go back
+      </Link>
 
-      <div className="mt-6 space-y-4">
-        <div>
-          <label className="block text-sm">
-            Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border px-2 py-1 text-sm w-full"
-          />
+      {/* Card */}
+      <div className="bg-white rounded-lg shadow p-6">
+
+        {/* Top */}
+        <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+
+          {/* Photo */}
+          <div className="relative w-28 h-28 rounded-lg overflow-hidden border">
+            <Image
+              src="/pic.jpeg"
+              alt="Profile"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          {/* Basic Info */}
+          <div className="flex-1 space-y-3 text-center md:text-left">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Rishita Kumar
+            </h1>
+
+            <p className="text-gray-600">
+              Engineer
+            </p>
+
+            <p className="text-sm text-[#8C2F4E]">
+              rk@example.com
+            </p>
+          </div>
+
         </div>
 
+        {/* Divider */}
+        <div className="my-6 border-t" />
+
+        {/* Bio */}
         <div>
-          <label className="block text-sm">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border px-2 py-1 text-sm w-full"
-          />
+          <h2 className="text-sm font-semibold text-gray-900 mb-2">
+            Bio
+          </h2>
+
+          <p className="text-sm text-gray-600 leading-relaxed">
+            HI, I AM RISHITA KUMAR
+          </p>
         </div>
 
-        <button className="text-sm border px-3 py-1">
-          Save
-        </button>
+        {/* Action */}
+        <div className="mt-6">
+          <Button variant="wine" size="sm">
+            Edit Profile
+          </Button>
+        </div>
+
       </div>
     </div>
   )

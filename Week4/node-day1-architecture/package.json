@@ -1,0 +1,22 @@
+{
+  "name": "day1-architecture",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+      "local": "NODE_ENV=local node src/server.js",
+      "dev": "NODE_ENV=dev node src/server.js",
+      "prod": "NODE_ENV=prod node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.5",
+    "pino": "^10.3.0",
+    "pino-pretty": "^13.1.3"
+  }
+}

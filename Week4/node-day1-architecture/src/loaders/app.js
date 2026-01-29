@@ -1,27 +1,29 @@
-import express from "express"
-import loadDB from "./db.js"
-import logger from "../utils/logger.js"
-import usersRoutes from "../routes/users.routes.js"
-import healthRoutes from "../routes/health.routes.js"
+const express = require("express");
+const loadDB = require("./db.js");
+const logger = require("../utils/logger.js");
 
+const usersRoutes = require("../routes/users.routes.js");
+const healthRoutes = require("../routes/health.routes.js");
 
+require("../models/User.js");
+require("../models/Product.js");
 
-export default async function createApp() {
-  const app = express()
+async function createApp() {
+  const app = express();
 
   // Middlewares
-  app.use(express.json())
-  logger.info("Middlewares loaded")
+  app.use(express.json());
+  logger.info("Middlewares loaded");
 
   // Database
-  await loadDB()
+  await loadDB();
 
   // Routes
-  app.use("/api", healthRoutes)
-  app.use("/api/users", usersRoutes)
-  logger.info("Routes mounted: 3 endpoints")
+  app.use("/api", healthRoutes);
+  app.use("/api/users", usersRoutes);
+  logger.info("Routes mounted: 3 endpoints");
 
-
-
-  return app
+  return app;
 }
+
+module.exports = createApp;

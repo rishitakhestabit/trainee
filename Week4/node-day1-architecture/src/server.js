@@ -1,6 +1,7 @@
-import config from "./config/index.js"
-import createApp from "./loaders/app.js"
-import logger from "./utils/logger.js"
+const config = require("./config/index.js");
+const createApp = require("./loaders/app.js");
+const logger = require("./utils/logger.js");
+
 
 async function startServer() {
   const app = await createApp()

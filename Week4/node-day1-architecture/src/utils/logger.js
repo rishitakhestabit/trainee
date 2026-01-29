@@ -1,9 +1,13 @@
-import pino from "pino"
+const pino = require("pino");
 
 const logger = pino({
   transport: {
-    target: "pino-pretty"
-  }
-})
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+      translateTime: "SYS:standard",
+    },
+  },
+});
 
-export default logger
+module.exports = logger;

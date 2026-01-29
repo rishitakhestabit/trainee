@@ -1,9 +1,16 @@
-export const usersService = {
-  list: async () => {
-    return [{ id: "u1", name: "Demo User" }]
+const UserRepository = require("../repositories/user.repository.js");
+
+const usersService = {
+  async list() {
+    return UserRepository.findPaginated({
+      page: 1,
+      limit: 20,
+    });
   },
 
-  create: async (data) => {
-    return { id: "u2", ...data }
-  }
-}
+  async create(payload) {
+    return UserRepository.create(payload);
+  },
+};
+
+module.exports = { usersService };

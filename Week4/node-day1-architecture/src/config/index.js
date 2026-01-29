@@ -1,14 +1,14 @@
-import dotenv from "dotenv"
-import path from "path"
+const dotenv = require("dotenv");
+const path = require("path");
 
-const env = process.env.NODE_ENV || "local"
+const env = process.env.NODE_ENV || "local";
 
 dotenv.config({
-  path: path.resolve(process.cwd(), `.env.${env}`)
-})
+  path: path.resolve(process.cwd(), `.env.${env}`),
+});
 
-export default {
+module.exports = {
   env,
-  port: process.env.PORT,
-  dbUrl: process.env.DB_URL
-}
+  port: Number(process.env.PORT) || 3000,
+  dbUrl: process.env.DB_URL,
+};

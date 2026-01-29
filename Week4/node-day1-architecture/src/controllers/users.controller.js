@@ -1,13 +1,15 @@
-import { usersService } from "../services/users.service.js"
+const { usersService } = require("../services/users.service.js");
 
-export const usersController = {
+const usersController = {
   list: async (req, res) => {
-    const users = await usersService.list()
-    res.json(users)
+    const users = await usersService.list();
+    res.json(users);
   },
 
   create: async (req, res) => {
-    const user = await usersService.create(req.body)
-    res.status(201).json(user)
-  }
-}
+    const user = await usersService.create(req.body);
+    res.status(201).json(user);
+  },
+};
+
+module.exports = { usersController };

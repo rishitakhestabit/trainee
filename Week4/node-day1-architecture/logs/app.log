@@ -1,0 +1,38 @@
+{"level":"info","time":"2026-02-02T22:06:44.324Z","requestId":"no-request-id","msg":"Security middleware loaded"}
+{"level":"info","time":"2026-02-02T22:06:44.347Z","requestId":"no-request-id","msg":"DB connected"}
+{"level":"info","time":"2026-02-02T22:06:44.347Z","requestId":"no-request-id","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":"info","time":"2026-02-02T22:06:44.347Z","requestId":"no-request-id","msg":"Tracing middleware loaded"}
+{"level":"info","time":"2026-02-02T22:06:44.349Z","requestId":"no-request-id","msg":"Server started on port 5000"}
+{"level":"info","time":"2026-02-02T22:09:57.077Z","requestId":"no-request-id","msg":"Security middleware loaded"}
+{"level":"info","time":"2026-02-02T22:09:57.098Z","requestId":"no-request-id","msg":"DB connected"}
+{"level":"info","time":"2026-02-02T22:09:57.098Z","requestId":"no-request-id","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":"info","time":"2026-02-02T22:09:57.098Z","requestId":"no-request-id","msg":"Tracing middleware loaded"}
+{"level":"info","time":"2026-02-02T22:09:57.099Z","requestId":"no-request-id","msg":"Server started on port 5000"}
+{"level":30,"time":1770070538294,"pid":48345,"hostname":"HESTABIT-535","msg":"Security middleware loaded"}
+{"level":30,"time":1770070538318,"pid":48345,"hostname":"HESTABIT-535","msg":"DB connected"}
+{"level":30,"time":1770070538318,"pid":48345,"hostname":"HESTABIT-535","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":30,"time":1770070538318,"pid":48345,"hostname":"HESTABIT-535","msg":"Tracing middleware loaded"}
+{"level":30,"time":1770070538320,"pid":48345,"hostname":"HESTABIT-535","msg":"Server started on port 5000"}
+{"level":30,"time":1770070649018,"pid":48345,"hostname":"HESTABIT-535","method":"GET","path":"/docs","status":404,"ms":2,"msg":"request"}
+{"level":30,"time":1770070733625,"pid":48694,"hostname":"HESTABIT-535","msg":"Security middleware loaded"}
+{"level":30,"time":1770070733648,"pid":48694,"hostname":"HESTABIT-535","msg":"DB connected"}
+{"level":30,"time":1770070733648,"pid":48694,"hostname":"HESTABIT-535","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":30,"time":1770070733656,"pid":48694,"hostname":"HESTABIT-535","msg":"Tracing middleware loaded"}
+{"level":30,"time":1770070733657,"pid":48694,"hostname":"HESTABIT-535","msg":"Server started on port 5000"}
+{"level":30,"time":1770070739191,"pid":48755,"hostname":"HESTABIT-535","msg":"Security middleware loaded"}
+{"level":30,"time":1770070739216,"pid":48755,"hostname":"HESTABIT-535","msg":"DB connected"}
+{"level":30,"time":1770070739217,"pid":48755,"hostname":"HESTABIT-535","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":30,"time":1770070739228,"pid":48755,"hostname":"HESTABIT-535","msg":"Tracing middleware loaded"}
+{"level":30,"time":1770070739231,"pid":48755,"hostname":"HESTABIT-535","msg":"Server started on port 5000"}
+{"level":30,"time":1770070744126,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs","status":301,"ms":3,"msg":"request"}
+{"level":30,"time":1770070744130,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/","status":200,"ms":2,"msg":"request"}
+{"level":30,"time":1770070744149,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/swagger-ui-init.js","status":200,"ms":0,"msg":"request"}
+{"level":30,"time":1770070744150,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/swagger-ui.css","status":200,"ms":4,"msg":"request"}
+{"level":30,"time":1770070744153,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/swagger-ui-standalone-preset.js","status":200,"ms":4,"msg":"request"}
+{"level":30,"time":1770070744158,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/swagger-ui-bundle.js","status":200,"ms":10,"msg":"request"}
+{"level":30,"time":1770070744286,"pid":48755,"hostname":"HESTABIT-535","method":"GET","path":"/docs/favicon-16x16.png","status":200,"ms":1,"msg":"request"}
+{"level":30,"time":1770070849665,"pid":48993,"hostname":"HESTABIT-535","msg":"Security middleware loaded"}
+{"level":30,"time":1770070849688,"pid":48993,"hostname":"HESTABIT-535","msg":"DB connected"}
+{"level":30,"time":1770070849689,"pid":48993,"hostname":"HESTABIT-535","msg":"Routes mounted: /api, /api/users, /api/products"}
+{"level":30,"time":1770070849699,"pid":48993,"hostname":"HESTABIT-535","msg":"Tracing middleware loaded"}
+{"level":30,"time":1770070849701,"pid":48993,"hostname":"HESTABIT-535","msg":"Server started on port 5000"}

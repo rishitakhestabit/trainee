@@ -72,15 +72,11 @@ userSchema.virtual("fullName").get(function () {
 });
 
 // Pre-save hook: hash password
-userSchema.pre("save", async function (next) {
-  try {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-  } catch (err) {
-    next(err);
-  }
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 10);
 });
+
 
 // Compare password helper
 userSchema.methods.comparePassword = async function (plain) {

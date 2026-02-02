@@ -1,9 +1,12 @@
-const express = require("express");
+// src/routes/users.routes.js
+const router = require("express").Router();
+
+const validate = require("../middlewares/validate");
+const { createUserSchema } = require("../validators/user.schema");
+
 const { usersController } = require("../controllers/users.controller.js");
 
-const router = express.Router();
-
-router.get("/", usersController.list);    // endpoint 2
-router.post("/", usersController.create); // endpoint 3
+router.get("/", usersController.list);
+router.post("/", validate({ body: createUserSchema }), usersController.create);
 
 module.exports = router;

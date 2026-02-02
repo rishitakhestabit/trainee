@@ -3,23 +3,39 @@ const Product = require("../models/Product");
 
 class ProductRepository {
   async create(payload) {
-    const product = new Product(payload);
+    const product = new Product({
+      ...payload,
+      deletedAt: payload?.deletedAt ?? null,
+    });
     return product.save();
   }
 
-  async findById(id) {
+  async findById(id, { includeDeleted = false } = {}) {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
+
+    if (!includeDeleted) {
+      return Product.findOne({ _id: id, deletedAt: null }).lean({ virtuals: true });
+    }
+
     return Product.findById(id).lean({ virtuals: true });
   }
 
-  async findPaginated({ page = 1, limit = 10, filter = {}, sort = { createdAt: -1 } } = {}) {
+  async findPaginated({
+    page = 1,
+    limit = 10,
+    filter = {},
+    sort = { createdAt: -1 },
+    includeDeleted = false,
+  } = {}) {
     page = Math.max(1, Number(page));
     limit = Math.min(100, Math.max(1, Number(limit)));
     const skip = (page - 1) * limit;
 
+    const queryFilter = includeDeleted ? { ...filter } : { ...filter, deletedAt: null };
+
     const [items, total] = await Promise.all([
-      Product.find(filter).sort(sort).skip(skip).limit(limit).lean({ virtuals: true }),
-      Product.countDocuments(filter),
+      Product.find(queryFilter).sort(sort).skip(skip).limit(limit).lean({ virtuals: true }),
+      Product.countDocuments(queryFilter),
     ]);
 
     return {
@@ -28,11 +44,17 @@ class ProductRepository {
     };
   }
 
-  async findPaginatedCursor({ limit = 10, filter = {}, cursor = null, sortDirection = "desc" } = {}) {
+  async findPaginatedCursor({
+    limit = 10,
+    filter = {},
+    cursor = null,
+    sortDirection = "desc",
+    includeDeleted = false,
+  } = {}) {
     limit = Math.min(100, Math.max(1, Number(limit)));
     const dir = sortDirection === "asc" ? 1 : -1;
 
-    const queryFilter = { ...filter };
+    const queryFilter = includeDeleted ? { ...filter } : { ...filter, deletedAt: null };
 
     if (cursor) {
       const [createdAtIso, id] = cursor.split("_");
@@ -55,15 +77,38 @@ class ProductRepository {
     return { items, meta: { limit, nextCursor, strategy: "cursor", sortDirection } };
   }
 
-  async update(id, updates = {}) {
+  async update(id, updates = {}, { includeDeleted = false } = {}) {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
 
-    return Product.findByIdAndUpdate(id, { $set: updates }, { new: true, runValidators: true }).lean({
+    const filter = includeDeleted ? { _id: id } : { _id: id, deletedAt: null };
+
+    return Product.findOneAndUpdate(filter, { $set: updates }, { new: true, runValidators: true }).lean({
       virtuals: true,
     });
   }
 
+  // ✅ soft delete
   async delete(id) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+
+    return Product.findOneAndUpdate(
+      { _id: id, deletedAt: null },
+      { $set: { deletedAt: new Date() } },
+      { new: true }
+    ).lean({ virtuals: true });
+  }
+
+  async restore(id) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+
+    return Product.findOneAndUpdate(
+      { _id: id, deletedAt: { $ne: null } },
+      { $set: { deletedAt: null } },
+      { new: true }
+    ).lean({ virtuals: true });
+  }
+
+  async hardDelete(id) {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
     return Product.findByIdAndDelete(id).lean({ virtuals: true });
   }

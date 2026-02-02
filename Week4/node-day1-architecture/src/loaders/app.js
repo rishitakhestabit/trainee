@@ -4,7 +4,9 @@ const logger = require("../utils/logger.js");
 
 const usersRoutes = require("../routes/users.routes.js");
 const healthRoutes = require("../routes/health.routes.js");
+const { errorMiddleware } = require("../middlewares/error.middleware");
 
+const productsRoutes = require("../routes/products.routes");
 require("../models/User.js");
 require("../models/Product.js");
 
@@ -22,8 +24,12 @@ async function createApp() {
   app.use("/api", healthRoutes);
   app.use("/api/users", usersRoutes);
   logger.info("Routes mounted: 3 endpoints");
+  app.use("/api/products", productsRoutes);
+  app.use(errorMiddleware);
 
   return app;
 }
+
+
 
 module.exports = createApp;

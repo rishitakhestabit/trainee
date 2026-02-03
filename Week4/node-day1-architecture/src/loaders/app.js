@@ -8,11 +8,12 @@ const securityMiddleware = require("../middlewares/security");
 const { errorMiddleware } = require("../middlewares/error.middleware");
 const requestLogger = require("../middlewares/requestLogger");
 const setupSwagger = require("../utils/swagger");
+const { tracingMiddleware } = require("../utils/tracing");
 
 const usersRoutes = require("../routes/users.routes.js");
 const healthRoutes = require("../routes/health.routes.js");
 const productsRoutes = require("../routes/products.routes.js");
-const { tracingMiddleware } = require("../utils/tracing");
+
 // Ensure models are registered
 require("../models/User.js");
 require("../models/Product.js");
@@ -20,9 +21,14 @@ require("../models/Product.js");
 async function createApp() {
   const app = express();
 
-  //Security + parsing + limits (helmet/cors/rate-limit/sanitize/xss/hpp/json limit)
+  // Security + parsing + limits (helmet/cors/rate-limit/sanitize/xss/hpp/json limit)
   securityMiddleware(app);
   logger.info("Security middleware loaded");
+
+  // IMPORTANT: tracing + request logs should run BEFORE routes
+  app.use(tracingMiddleware);
+  app.use(requestLogger);
+  logger.info("Tracing + request logger loaded");
 
   // Database
   await loadDB();
@@ -33,16 +39,12 @@ async function createApp() {
   app.use("/api/users", usersRoutes);
   app.use("/api/products", productsRoutes);
   logger.info("Routes mounted: /api, /api/users, /api/products");
-  app.use(requestLogger);
+
+  // Swagger (can be after routes)
   setupSwagger(app);
 
   // Error handler last
   app.use(errorMiddleware);
-  
-
-  app.use(tracingMiddleware);
-  logger.info("Tracing middleware loaded");
-
 
   return app;
 }

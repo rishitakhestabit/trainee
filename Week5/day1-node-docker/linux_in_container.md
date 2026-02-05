@@ -131,7 +131,7 @@ docker logs node-app
 
 Screenshot:
 
-![](logs.png)
+![](ss/logs.png)
 
 This showed:
 
@@ -153,7 +153,7 @@ docker exec -it node-app /bin/sh
 
 Screenshot:
 
-![](terminalcommand1.png)
+![](ss/terminalcommand1.png)
 
 Now my terminal prompt changed, indicating I was inside the container environment.
 
@@ -173,7 +173,7 @@ ls -la /app
 
 Screenshot:
 
-![](terminalcommand2.png)
+![](ss/terminalcommand2.png)
 
 Observations:
 
@@ -196,7 +196,7 @@ ls -la /app
 
 Screenshot:
 
-![](userpermission.png)
+![](ss/userpermission.png)
 
 Observations:
 
@@ -218,7 +218,7 @@ top
 
 Screenshot:
 
-![](process.png)
+![](ss/process.png)
 
 Observations:
 
@@ -239,7 +239,7 @@ du -sh /app
 
 Screenshot:
 
-![](disk.png)
+![](ss/disk.png)
 
 Observations:
 

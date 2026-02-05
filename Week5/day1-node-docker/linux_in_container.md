@@ -1,4 +1,4 @@
-# Linux Inside a Docker Container — Day 1 (Hands-on Narrative)
+# Linux Inside a Docker Container — Day 1 
 
 ---
 

@@ -91,7 +91,7 @@ docker build -t day1-node-app .
 
 Screenshot of build output:
 
-![](dockerbuild.png)
+![](ss/dockerbuild.png) 
 
 This created an image named `day1-node-app`.
 

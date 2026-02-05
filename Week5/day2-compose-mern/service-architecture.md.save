@@ -1,0 +1,40 @@
+# Day 2 — Multi-Container Full Stack Application using Docker Compose  
+**React Client + Node.js Server + MongoDB**
+
+---
+
+## Introduction
+
+On Day 2 of Week 5, my goal was to understand how real production applications run multiple services together instead of a single container.  
+
+Previously, on Day 1, I had learned how to run a single Node.js application inside Docker. While that was useful, it did not reflect real-world systems. In reality, most applications consist of:
+
+- A frontend (client)
+- A backend (server)
+- A database
+
+These parts are usually deployed as **separate services**, but they must still communicate with each other.
+
+So for this task, I built a **multi-container application** using Docker Compose where:
+
+- A React client runs in one container  
+- A Node.js + Express server runs in another container  
+- MongoDB runs in a third container  
+
+All three services start together using one command:
+
+```bash
+docker compose up -d
+```
+
+Planning the Architecture
+
+Before writing any code, I thought about what components I needed:
+
+A client for UI
+
+A server for API logic
+
+A database for storing data
+
+I decided to structure the project like this:

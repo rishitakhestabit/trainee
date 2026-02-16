@@ -11,8 +11,8 @@ import numpy as np
 # -----------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-RAW_PATH = PROJECT_ROOT / "data/raw/CustomerChurn.csv"
-PROCESSED_PATH = PROJECT_ROOT / "data/processed/final.csv"
+RAW_PATH = PROJECT_ROOT / "src/data/raw/CustomerChurn.csv"
+PROCESSED_PATH = PROJECT_ROOT / "src/data/processed/final.csv"
 
 
 

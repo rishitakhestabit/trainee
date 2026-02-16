@@ -1,7 +1,13 @@
 {
+  "generated_at": "2026-02-16T15:34:02.489053",
+  "cv_folds": 5,
   "best_params": {
-    "model__C": 1.0
+    "C": 1.0,
+    "class_weight": null,
+    "penalty": "l1"
   },
-  "best_cv_roc_auc": 0.8475066576945964,
-  "generated_at": "2026-02-13T17:07:59.948357"
+  "best_cv_roc_auc": 0.8485062882345747,
+  "holdout_test_roc_auc_tuned": 0.8451057893513135,
+  "holdout_test_roc_auc_baseline": 0.8444831951225812,
+  "saved_model_path": "src/models/best_model_tuned.pkl"
 }

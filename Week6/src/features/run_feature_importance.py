@@ -2,47 +2,32 @@
 
 import json
 import numpy as np
-import pandas as pd
+from scipy import sparse
 
-from src.features.build_features import (
-    load_data,
-    engineer_features,
-    encode_features,
-    split_and_scale
-)
+from src.features.feature_selector import logistic_feature_importance, plot_feature_importance
 
-from src.features.feature_selector import (
-    logistic_feature_importance,
-    plot_feature_importance
-)
+X_TRAIN_PATH = "src/data/processed/X_train.npz"
+Y_TRAIN_PATH = "src/data/processed/y_train.npy"
+FEATURE_LIST_PATH = "src/features/feature_list.json"
+PLOT_PATH = "src/features/feature_importance.png"
 
 
 def main():
-    print("\n[INFO] Running feature importance")
+    print("\n[INFO] Running feature importance (Day-2 artifacts)")
 
-    # 1. Rebuild features exactly as Day 2
-    df = load_data()
-    df = engineer_features(df)
-    df = encode_features(df)
+    X_train = sparse.load_npz(X_TRAIN_PATH)
+    y_train = np.load(Y_TRAIN_PATH)
 
-    X_train, X_test, y_train, y_test, feature_names = split_and_scale(df)
+    with open(FEATURE_LIST_PATH, "r") as f:
+        feature_names = json.load(f)
 
-    # 2. Compute feature importance
-    top_features, full_importance = logistic_feature_importance(
-        X_train,
-        y_train,
-        feature_names,
-        top_k=20
-    )
+    top20, _ = logistic_feature_importance(X_train, y_train, feature_names, top_k=20)
 
-    # 3. Show top features
     print("\nTop 20 Important Features:")
-    print(top_features)
+    print(top20.to_string(index=False))
 
-    # 4. Plot importance
-    plot_feature_importance(top_features)
-
-    print("\n[INFO] Feature importance completed\n")
+    plot_feature_importance(top20, save_path=PLOT_PATH)
+    print(f"\nSaved plot: {PLOT_PATH}\n")
 
 
 if __name__ == "__main__":

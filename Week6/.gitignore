@@ -1,47 +1,16 @@
-# =========================
-# Python
-# =========================
+# ---- Python ----
+.venv/
+venv/
+env/
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
-.venv/
-env/
-venv/
 
-# =========================
-# OS files
-# =========================
+# ---- Node ----
+node_modules/
+
+
+# ---- OS ----
 .DS_Store
 Thumbs.db
-
-# =========================
-# Dataset (never push raw data)
-# =========================
-src/data/raw/*
-!src/data/raw/.gitkeep
-
-# =========================
-# ML Artifacts
-# =========================
-*.pkl
-*.joblib
-*.npy
-*.npz
-
-# =========================
-# Logs
-# =========================
-*.log
-*.csv
-
-# =========================
-# Temporary outputs
-# =========================
-src/evaluation/*.png
-src/evaluation/*.json
-src/evaluation/*.csv
-
-# Keep reports only
-!MODEL-COMPARISON.md
-!MODEL-INTERPRETATION.md
+EOF

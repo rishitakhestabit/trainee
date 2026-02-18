@@ -1,5 +1,3 @@
-# src/features/run_day2_features.py
-
 import json
 import os
 import joblib
@@ -11,7 +9,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from scipy.sparse import save_npz, issparse, csr_matrix
 
-from src.features.build_features import load_data, engineer_features, TARGET_COL
+from src.features.build_features import load_data, prepare_target, TARGET_COL
+from src.features.feature_engineering import add_engineered_features_df
 
 
 # ----------------------------
@@ -34,7 +33,7 @@ RANDOM_STATE = 40
 # ----------------------------
 def build_preprocessor(X_train):
     cat_cols = X_train.select_dtypes(include=["object", "category", "string"]).columns.tolist()
-    num_cols = X_train.select_dtypes(include=["number", "bool"]).columns.tolist()
+    num_cols = X_train.select_dtypes(include=["number", "bool", "int64", "float64"]).columns.tolist()
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -49,12 +48,11 @@ def build_preprocessor(X_train):
 
 def get_feature_names(preprocessor, X_train):
     cat_cols = X_train.select_dtypes(include=["object", "category", "string"]).columns.tolist()
-    num_cols = X_train.select_dtypes(include=["number", "bool"]).columns.tolist()
+    num_cols = X_train.select_dtypes(include=["number", "bool", "int64", "float64"]).columns.tolist()
 
     ohe = preprocessor.named_transformers_["cat"]
     cat_names = ohe.get_feature_names_out(cat_cols).tolist()
 
-    # numeric feature names are unchanged
     return cat_names + num_cols
 
 
@@ -65,14 +63,16 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs("src/features", exist_ok=True)
 
-    # 1) Load processed data + feature engineering (row-wise safe)
+    # 1) Load processed data
     df = load_data()
-    df = engineer_features(df)
 
-    # 2) Split FIRST (leakage-safe)
+    # 2) Prepare y separately (no leakage from feature engineering)
+    y = prepare_target(df, TARGET_COL)
+
+    # 3) X is raw (no engineered cols yet)
     X = df.drop(columns=[TARGET_COL])
-    y = df[TARGET_COL].astype(int)
 
+    # 4) Split FIRST (leakage-safe)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=0.2,
@@ -80,12 +80,16 @@ def main():
         stratify=y
     )
 
-    # 3) Fit preprocess on TRAIN only
+    # 5) Feature engineering on X only (pure, reusable for pipeline later)
+    X_train = add_engineered_features_df(X_train)
+    X_test = add_engineered_features_df(X_test)
+
+    # 6) Fit preprocess on TRAIN only
     preprocessor = build_preprocessor(X_train)
     X_train_t = preprocessor.fit_transform(X_train)
     X_test_t = preprocessor.transform(X_test)
 
-    # 4) Save arrays (sparse safe)
+    # 7) Save arrays (sparse safe)
     X_train_out = X_train_t.tocsr() if issparse(X_train_t) else csr_matrix(X_train_t)
     X_test_out  = X_test_t.tocsr()  if issparse(X_test_t)  else csr_matrix(X_test_t)
 
@@ -94,15 +98,15 @@ def main():
     np.save(Y_TRAIN_PATH, y_train.to_numpy())
     np.save(Y_TEST_PATH, y_test.to_numpy())
 
-    # 5) Save feature names
+    # 8) Save feature names
     feature_names = get_feature_names(preprocessor, X_train)
     with open(FEATURE_LIST_PATH, "w") as f:
         json.dump(feature_names, f, indent=2)
 
-    # 6) Save preprocessor (needed later for inference)
+    # 9) Save preprocessor
     joblib.dump(preprocessor, PREPROCESSOR_PATH)
 
-    print("\n [DAY 2] Features built and saved")
+    print("\n[DAY 2] Features built and saved")
     print("Saved:", X_TRAIN_PATH)
     print("Saved:", X_TEST_PATH)
     print("Saved:", Y_TRAIN_PATH)

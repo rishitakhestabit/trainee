@@ -1,0 +1,12 @@
+.venv/
+.git/
+__pycache__/
+*.pyc
+*.png
+*.jpg
+*.jpeg
+notebooks/
+data/
+logs/
+dist/
+build/

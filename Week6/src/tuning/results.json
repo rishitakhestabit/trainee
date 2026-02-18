@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-02-16T15:34:02.489053",
+  "generated_at": "2026-02-17T19:40:44.745284",
+  "model_version": "v1",
   "cv_folds": 5,
   "best_params": {
-    "C": 1.0,
-    "class_weight": null,
-    "penalty": "l1"
+    "model__C": 1.0,
+    "model__class_weight": null,
+    "model__penalty": "l1"
   },
-  "best_cv_roc_auc": 0.8485062882345747,
-  "holdout_test_roc_auc_tuned": 0.8451057893513135,
-  "holdout_test_roc_auc_baseline": 0.8444831951225812,
-  "saved_model_path": "src/models/best_model_tuned.pkl"
+  "best_cv_roc_auc": 0.8484234591308466,
+  "holdout_test_roc_auc_tuned": 0.846128807254127,
+  "saved_model_path": "src/models/best_model_tuned.pkl",
+  "saved_inference_pipeline_path": "src/models/inference_pipeline_v1.joblib"
 }

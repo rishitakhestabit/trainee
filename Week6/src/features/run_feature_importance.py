@@ -1,5 +1,3 @@
-# src/features/run_feature_importance.py
-
 import json
 import numpy as np
 from scipy import sparse

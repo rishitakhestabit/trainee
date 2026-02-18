@@ -1,0 +1,10 @@
+{
+  "status": "insufficient_data",
+  "message": "Need at least 100 prediction samples to evaluate drift reliably.",
+  "reference_data_path": "/home/rishitakumar/trainee/Week6/src/data/processed/final.csv",
+  "prediction_log_path": "/home/rishitakumar/trainee/Week6/prediction_logs.csv",
+  "n_reference_rows": 7043,
+  "n_current_rows": 1,
+  "min_current_samples": 100,
+  "next_step": "Send more /predict requests (or run a small load test) then re-run drift_checker."
+}

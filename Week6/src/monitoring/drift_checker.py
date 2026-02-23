@@ -172,7 +172,7 @@ def main():
     ref = load_reference_df(REFERENCE_CSV)
     cur = load_current_df_from_logs(PRED_LOG_PATH)
 
-    # ✅ Guardrail: too few production samples => drift metrics will be misleading
+    # Guardrail: too few production samples => drift metrics will be misleading
     if len(cur) < MIN_CURRENT_SAMPLES:
         report = {
             "status": "insufficient_data",

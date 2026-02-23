@@ -2,3 +2,9 @@
 .DS_Store
 node_modules/
 
+.venv/
+venv/
+
+*.pyc
+*pyo
+*pyd

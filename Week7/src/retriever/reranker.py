@@ -1,52 +1,59 @@
-# src/retriever/reranker.py
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import List, Optional, Tuple
 
-from src.embeddings.embedder import Embedder
+from langchain_core.documents import Document
+
+# pip install sentence-transformers
+from sentence_transformers import CrossEncoder
+
+from src.embeddings.embedder import EmbedderConfig, LocalEmbedder
 
 
 @dataclass
-class RerankConfig:
-    """
-    weight_retrieval_score: keeps some signal from original retrieval (FAISS/BM25 score)
-    """
-    weight_retrieval_score: float = 0.20
+class RerankerConfig:
+    cross_encoder_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"  # used only for fallback
 
 
-class CosineReranker:
+class Reranker:
     """
-    Rerank by cosine similarity between query and candidate chunk embeddings.
-    Works best if Embedder returns normalized embeddings.
+    Day-2 reranking:
+    - Primary: cross-encoder rerank
+    - Fallback: cosine similarity using embeddings (if cross-encoder fails)
     """
 
-    def __init__(self, embedder: Embedder, config: RerankConfig = RerankConfig()):
-        self.embedder = embedder
-        self.config = config
+    def __init__(self, cfg: Optional[RerankerConfig] = None):
+        self.cfg = cfg or RerankerConfig()
 
-    def rerank(
-        self,
-        query: str,
-        candidates: List[Tuple[float, Dict[str, Any]]],
-        top_k: int = 20,
-    ) -> List[Tuple[float, Dict[str, Any]]]:
-        if not candidates:
+        self._ce: Optional[CrossEncoder] = None
+        try:
+            self._ce = CrossEncoder(self.cfg.cross_encoder_model)
+        except Exception:
+            self._ce = None
+
+        # for cosine fallback
+        self._embedder = LocalEmbedder(EmbedderConfig(model_name=self.cfg.embedding_model_name))
+
+    def rerank(self, query: str, docs: List[Document], top_k: int) -> List[Tuple[Document, float]]:
+        if not docs:
             return []
 
-        texts = [item["text"] for _, item in candidates]
-        q_vec = self.embedder.embed_query(query).astype("float32")
-        doc_vecs = self.embedder.embed_texts(texts).astype("float32")
+        if self._ce is not None:
+            pairs = [(query, d.page_content) for d in docs]
+            scores = self._ce.predict(pairs)
+            ranked = list(zip(docs, [float(s) for s in scores]))
+            ranked.sort(key=lambda x: x[1], reverse=True)
+            return ranked[:top_k]
 
-        # dot product == cosine similarity if embeddings are normalized
-        sims = doc_vecs @ q_vec  # (n,)
+        # ----- cosine fallback -----
+        qv = self._embedder.embed_query(query)
+        dvs = self._embedder.embed_documents([d.page_content for d in docs])
 
-        reranked: List[Tuple[float, Dict[str, Any]]] = []
-        w = self.config.weight_retrieval_score
+        def dot(a, b):
+            return float(sum(x * y for x, y in zip(a, b)))
 
-        for (base_score, item), sim in zip(candidates, sims):
-            final_score = (1 - w) * float(sim) + w * float(base_score)
-            reranked.append((final_score, item))
-
-        reranked.sort(key=lambda x: x[0], reverse=True)
-        return reranked[:top_k]
+        ranked = [(d, dot(qv, v)) for d, v in zip(docs, dvs)]
+        ranked.sort(key=lambda x: x[1], reverse=True)
+        return ranked[:top_k]

@@ -1,118 +1,172 @@
+# MULTIMODAL‑RAG --- Day 3 (Image Retrieval Augmented Generation)
 
-# MULTIMODAL-RAG.md 
+## Overview
 
-## Goal
-Extend the RAG system from text‑only to **multimodal** by allowing images and scanned PDFs to be indexed and retrieved using semantic similarity.
+Day‑3 extends the existing text‑RAG pipeline into a **multimodal RAG
+system** capable of understanding and retrieving information from images
+and scanned PDFs.
 
-The system now understands:
-- Images (PNG/JPG)
-- Scanned PDFs (each page treated as an image)
-- Diagrams / Flowcharts / Forms
+The system ingests visual data, extracts semantic meaning, stores vector
+representations, and allows three query modes: 1. Text -> Image 2. Image
+-> Image 3. Image -> Text Answer (OCR + Caption context)
 
----
+The goal is to simulate enterprise document intelligence where diagrams,
+screenshots, and scanned documents become searchable knowledge.
 
-## Architecture Overview
+------------------------------------------------------------------------
 
-### Ingestion Pipeline
-For every file inside:
-```
-src/data/images/
-```
+## Project Structure
 
-The pipeline performs:
+    src/
+     ├── data/
+     │   └── images/                 # Raw images + PDFs (input)
+     │
+     ├── multimodal_vectorstore/
+     │   ├── images.faiss            # CLIP vector index
+     │   └── images_meta.jsonl       # Metadata (OCR + captions)
+     │
+     ├── embeddings/
+     │   └── clip_embedder.py        # CLIP text + image embedding model
+     │
+     ├── pipelines/
+     │   └── image_ingest.py         # Image ingestion pipeline
+     │
+     └── retriever/
+         └── image_search.py         # Interactive multimodal search
 
-1. **PDF Handling (PyMuPDF)**
-   - Each PDF page → converted to image
+------------------------------------------------------------------------
 
-2. **OCR Extraction (Tesseract)**
-   - Extract readable text from image
+## Image Ingestion Pipeline (`image_ingest.py`)
 
-3. **Caption Generation (BLIP)**
-   - Generate human description of image
+### Step 1 --- File Discovery
 
-4. **Vision Embedding (CLIP)**
-   - Convert image → 512‑dim vector
+The system scans:
 
-5. **Storage**
-   - FAISS index → vectors
-   - JSON metadata → captions + OCR + source info
+    src/data/images/
 
-Output:
-```
-src/data/vectorstore/image_index.faiss
-src/data/vectorstore/image_index_meta.json
-```
+Supported formats: - PNG, JPG, JPEG - PDF (each page converted to image)
 
----
+Each file is converted to RGB format for model compatibility.
 
-## Retrieval Modes
+------------------------------------------------------------------------
 
-Run:
-```
-python -m src.retriever.image_search
-```
+### Step 2 --- Information Extraction
 
-### 1) Text → Image
-User enters text query.
-System embeds text using CLIP text encoder.
-Returns most similar images/PDF pages.
+For every image/page:
 
-### 2) Image → Image
-User provides image path.
-System retrieves visually similar images.
+**OCR Extraction (Tesseract)** - Extracts visible text from diagrams,
+forms, or screenshots - Used later for explanation grounding
 
-### 3) Image → Text Evidence
-User provides image path.
-System returns explanation context:
-- caption
-- OCR text
-- source & page
+**Caption Generation (BLIP)** - Produces natural language description of
+image content - Helps semantic understanding beyond raw OCR
 
----
+------------------------------------------------------------------------
 
-## Multimodal Vector Design
+### Step 3 --- Embedding Generation
 
-Each record stored as:
+Uses CLIP model:
 
-Vector:
-- CLIP image embedding (512‑d normalized)
+    Image → 512‑dim vector
+    Text  → 512‑dim vector
 
-Metadata:
-- source file path
-- file type (image/pdf)
-- page number (for PDF)
-- caption (BLIP)
-- OCR text (Tesseract)
-- tags
+Both lie in the same vector space → enables cross‑modal retrieval.
 
-Similarity:
-Cosine similarity via FAISS IndexFlatIP
+Vectors are normalized and stored in FAISS for cosine similarity search.
 
----
+------------------------------------------------------------------------
 
-## Demonstration (Flowchart PDF)
+### Step 4 --- Storage
 
-Added file:
-```
-src/data/images/flowchart.pdf
-```
+The pipeline generates:
 
-During ingestion:
-- Each page converted to image
-- OCR extracted flowchart text
-- Caption generated
-- Indexed into FAISS
+**Vector index**
 
-Example query:
-```
-flowchart
-```
+    src/multimodal_vectorstore/images.faiss
 
-Result:
-System retrieved correct PDF pages with explanation context.
+**Metadata**
 
----
+    src/multimodal_vectorstore/images_meta.jsonl
 
-![Example Query](ss/day3ss/examplequery.png)
+Stored metadata: - Source path - Page number (for PDFs) - OCR text -
+Caption
 
+------------------------------------------------------------------------
 
+## Retrieval System (`image_search.py`)
+
+Running the file launches an interactive menu:
+
+    1) Text → Image
+    2) Image → Image
+    3) Image → Text Answer
+    4) Exit
+
+The menu repeats after each query.
+
+------------------------------------------------------------------------
+
+### Mode 1 --- Text → Image
+
+User enters a natural language description.
+
+Process: 1. Convert text -> CLIP embedding 2. Compare with stored image
+vectors 3. Return most semantically similar images
+
+Example:
+
+    network architecture diagram
+
+------------------------------------------------------------------------
+
+### Mode 2 --- Image → Image
+
+User provides an image path.
+
+Process: 1. Convert query image → embedding 2. Retrieve visually similar
+images
+
+Equivalent to reverse image search.
+
+------------------------------------------------------------------------
+
+### Mode 3 --- Image → Text Answer
+
+User provides an image.
+
+Process: 1. Find similar images/pages 2. Combine OCR + caption 3.
+Provide explainable textual context
+
+This prepares grounded information for future LLM answering.
+
+------------------------------------------------------------------------
+
+## How to Run
+
+### 1) Build multimodal index
+
+    python -m src.pipelines.image_ingest
+
+### 2) Start search interface
+
+    python -m src.retriever.image_search
+
+------------------------------------------------------------------------
+
+## Key Concepts Implemented
+
+-   CLIP cross‑modal embeddings
+-   OCR document understanding
+-   Vision caption generation
+-   Multimodal vector database
+-   Interactive semantic search
+
+------------------------------------------------------------------------
+
+## Outcome
+
+The system transforms images into searchable knowledge. Users can now
+search diagrams and screenshots using natural language and obtain
+contextual explanations instead of raw files.
+
+This completes the transition from **text‑only RAG -> multimodal
+enterprise knowledge retrieval system**.

@@ -1,104 +1,84 @@
-# src/retriever/query_engine.py
 from __future__ import annotations
 
+import argparse
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Optional
+from typing import List, Optional
 
-from src.embeddings.embedder import Embedder
-from src.vectorstore.faiss_store import FaissVectorStore, FaissPaths
+from langchain_core.documents import Document
+from langchain_community.vectorstores import FAISS
 
-INDEX_PATH = Path("src/data/vectorstore/index.faiss")
-META_PATH = Path("src/data/vectorstore/index_meta.json")
+from src.embeddings.embedder import EmbedderConfig, LocalEmbedder
+
+VECTORSTORE_DIR = Path("src/vectorstore")
+
+
+@dataclass
+class QueryConfig:
+    top_k: int = 5
+    embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 class QueryEngine:
+    def __init__(self, cfg: Optional[QueryConfig] = None, vectorstore_dir: Path = VECTORSTORE_DIR):
+        self.cfg = cfg or QueryConfig()
+        self.embedder = LocalEmbedder(EmbedderConfig(model_name=self.cfg.embedding_model_name))
+        self.vs = FAISS.load_local(
+            str(vectorstore_dir),
+            self.embedder.langchain_embeddings,
+            allow_dangerous_deserialization=True,
+        )
 
-    def __init__(
-        self,
-        index_path: Path = INDEX_PATH,
-        meta_path: Path = META_PATH,
-    ):
-        self.embedder = Embedder()
-        self.store = FaissVectorStore(FaissPaths(index_path, meta_path))
-        self.store.load()
+    def retrieve(self, query: str, top_k: Optional[int] = None) -> List[Document]:
+        k = top_k if top_k is not None else self.cfg.top_k
+        return self.vs.similarity_search(query, k=k)
 
-    def query(self, q: str, top_k: int = 5) -> List[Tuple[float, Dict[str, Any]]]:
-        q_vec = self.embedder.embed_query(q)
-        # NOTE: your store.search currently uses parameter name `k`
-        return self.store.search(q_vec, k=top_k)
+    @staticmethod
+    def pretty_print(docs: List[Document]) -> None:
+        for i, d in enumerate(docs, start=1):
+            src = d.metadata.get("source", "unknown")
+            page = d.metadata.get("page", None)
+            tags = d.metadata.get("tags", [])
+            print("\n" + "=" * 80)
+            print(f"[{i}] source={src} | page={page} | tags={tags}")
+            print("-" * 80)
+            print(d.page_content[:1200] + ("..." if len(d.page_content) > 1200 else ""))
 
-    def build_context(
-        self,
-        results: List[Tuple[float, Dict[str, Any]]],
-        max_chars_per_chunk: int = 1200,
-    ) -> str:
-        """
-        Turns retrieved chunks into a single context string that is ready
-        to feed into an LLM later (Day-2/Day-5).
-        """
-        blocks = []
-        for i, (score, item) in enumerate(results, 1):
-            meta = item.get("meta", {})
-            source = meta.get("source", "unknown")
-            page = meta.get("page", None)
-            ctype = meta.get("type", None)
-            chunk_id = meta.get("chunk_id", None)
 
-            header_parts = [f"#{i}", f"score={score:.4f}", f"source={source}"]
-            if page is not None:
-                header_parts.append(f"page={page}")
-            if ctype is not None:
-                header_parts.append(f"type={ctype}")
-            if chunk_id is not None:
-                header_parts.append(f"chunk={chunk_id}")
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--top_k", type=int, default=5)
+    parser.add_argument("--embedding_model", type=str, default="sentence-transformers/all-MiniLM-L6-v2")
+    return parser.parse_args()
 
-            header = " | ".join(header_parts)
-            text = (item.get("text") or "").strip()
-            if len(text) > max_chars_per_chunk:
-                text = text[:max_chars_per_chunk].rstrip() + "…"
 
-            blocks.append(f"{header}\n{text}")
+def interactive_loop(engine: QueryEngine, top_k: int):
+    print("\n Interactive Query Mode")
+    print("Type your query and press Enter.")
+    print("Press Ctrl+C to exit.\n")
 
-        return "\n\n" + ("\n\n" + "-" * 80 + "\n\n").join(blocks) + "\n"
+    try:
+        while True:
+            q = input("Query> ").strip()
+            if not q:
+                continue
 
-    def pretty_print(
-        self,
-        results: List[Tuple[float, Dict[str, Any]]],
-        max_preview_chars: int = 500,
-    ) -> None:
-        """
-        Friendly terminal output for retrieval debugging.
-        """
-        for i, (score, item) in enumerate(results, 1):
-            meta = item.get("meta", {})
-            print("\n" + "=" * 90)
-            print(f"[{i}] Score: {score:.4f}")
-            print(
-                f"source={meta.get('source')} | page={meta.get('page')} | "
-                f"type={meta.get('type')} | chunk_id={meta.get('chunk_id')}"
-            )
-            text = (item.get("text") or "").strip()
-            print(text[:max_preview_chars] + ("…" if len(text) > max_preview_chars else ""))
+            docs = engine.retrieve(q, top_k=top_k)
+            engine.pretty_print(docs)
+
+    except KeyboardInterrupt:
+        print("\n Exiting")
+
+
+def main():
+    args = parse_args()
+
+    engine = QueryEngine(
+        QueryConfig(top_k=args.top_k, embedding_model_name=args.embedding_model)
+    )
+
+    interactive_loop(engine, top_k=args.top_k)
 
 
 if __name__ == "__main__":
-    qe = QueryEngine()
-    print("Retriever ready. Ask questions (type 'exit' to quit).")
-
-    while True:
-        q = input("\nAsk: ").strip()
-        if not q:
-            continue
-        if q.lower() in {"exit", "quit"}:
-            print("Bye")
-            break
-
-        results = qe.query(q, top_k=5)
-
-        # 1) Print retrieval results
-        qe.pretty_print(results)
-
-        # 2) Also show the combined context (useful for LLM later)
-        context = qe.build_context(results)
-        print("\n Context (ready for generator):")
-        print(context)
+    main()

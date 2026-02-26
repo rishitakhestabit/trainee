@@ -1,28 +1,35 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import List
-import numpy as np
-from sentence_transformers import SentenceTransformer
+from typing import List, Optional
+
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 
 @dataclass
 class EmbedderConfig:
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
-    normalize: bool = True
+    normalize_embeddings: bool = True
 
 
-class Embedder:
-    def __init__(self, config: EmbedderConfig = EmbedderConfig()):
-        self.model = SentenceTransformer(config.model_name)
-        self.normalize = config.normalize
+class LocalEmbedder:
+    """
+    Local embeddings using LangChain's HuggingFaceEmbeddings.
+    """
 
-    def embed_texts(self, texts: List[str]) -> np.ndarray:
-        embeddings = self.model.encode(
-            texts,
-            convert_to_numpy=True,
-            show_progress_bar=True,
-            normalize_embeddings=self.normalize
+    def __init__(self, cfg: Optional[EmbedderConfig] = None):
+        self.cfg = cfg or EmbedderConfig()
+        self._emb = HuggingFaceEmbeddings(
+            model_name=self.cfg.model_name,
+            encode_kwargs={"normalize_embeddings": self.cfg.normalize_embeddings},
         )
-        return embeddings.astype("float32")
 
-    def embed_query(self, query: str) -> np.ndarray:
-        return self.embed_texts([query])[0]
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        return self._emb.embed_documents(texts)
+
+    def embed_query(self, text: str) -> List[float]:
+        return self._emb.embed_query(text)
+
+    @property
+    def langchain_embeddings(self) -> HuggingFaceEmbeddings:
+        return self._emb

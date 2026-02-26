@@ -1,0 +1,224 @@
+{
+  "default": [
+    {
+      "role": "assistant",
+      "text": "No rows returned.",
+      "time": "2026-02-26T18:33:01.498851"
+    },
+    {
+      "role": "user",
+      "text": "name of users with first name A and from china",
+      "time": "2026-02-26T18:34:18.108988"
+    },
+    {
+      "role": "assistant",
+      "text": "No rows returned.",
+      "time": "2026-02-26T18:34:18.401508"
+    },
+    {
+      "role": "user",
+      "text": "name of users from china",
+      "time": "2026-02-26T18:34:41.760133"
+    },
+    {
+      "role": "assistant",
+      "text": "Returned 9 row(s). Showing first 9:\nColumns: first_name, last_name\n1. first_name=Jenna, last_name=Harding\n2. first_name=Bruce, last_name=Bass\n3. first_name=Don, last_name=Henry\n4. first_name=Dakota, last_name=Bowman\n5. first_name=Isaiah, last_name=Buckley\n6. first_name=Andrea, last_name=Dennis\n7. first_name=Connie, last_name=Mercado\n8. first_name=Sean, last_name=Gray\n9. first_name=Leslie, last_name=Spencer",
+      "time": "2026-02-26T18:34:42.048761"
+    }
+  ],
+  "demo1": [
+    {
+      "role": "system",
+      "text": "Refining: confidence=0.53",
+      "time": "2026-02-26T18:42:44.706996"
+    },
+    {
+      "role": "assistant",
+      "text": "Based on the retrieved context, here\u2019s what I found:\n\n[1] source=src/data/raw/astrazeneca_2022.pdf | page=175\n22 Post-retirement and other defined benefit schemes continued The last full actuarial valuation of the UK Pension Fund was carried out by a qualified actuary as at 31 March 2019. It was finalised in June 2020 and in early 2021, the Pensions Regulator acknowledged the outcome and no issues were raised. The funding assumptions used in this actuarial...\n\n---\n[2] source=src/data/raw/astrazeneca_2022.pdf | page=148\n. Bank and other borrowings The Group uses derivatives, principally interest rate swaps, to hedge the interest rate exposure inherent in a portion of its fixed interest rate debt. In such cases the Group will either designate the debt as fair value through profit and loss when certain criteria are met or as the hedged item under a fair value hedge....",
+      "time": "2026-02-26T18:42:44.839394"
+    },
+    {
+      "time": "2026-02-26T19:17:07.316674",
+      "role": "user",
+      "text": "Explain how credit underwriting works",
+      "meta": {
+        "filters": {
+          "year": "2022"
+        },
+        "top_k": 5
+      }
+    },
+    {
+      "time": "2026-02-26T19:17:13.873858",
+      "role": "assistant",
+      "text": "Based on the retrieved context:\n\n[1] source=src/data/raw/astrazeneca_2022.pdf | page=175 | year=2022 | type=None | tags=['week7', 'text-rag']\n22 Post-retirement and other defined benefit schemes continued The last full actuarial valuation of the UK Pension Fund was carried out by a qualified actuary as at 31 March 2019. It was finalised in June 2020 and in early 2021, the Pensions Regulator acknowledged the outcome and no issues were raised. The funding assumptions used in this actuarial valuation were set out in the Group\u2019s 2020 report...\n\n---\n[2] source=src/data/raw/astrazeneca_2022.pdf | page=148 | year=2022 | type=None | tags=['week7', 'text-rag']\n. Bank and other borrowings The Group uses derivatives, principally interest rate swaps, to hedge the interest rate exposure inherent in a portion of its fixed interest rate debt. In such cases the Group will either designate the debt as fair value through profit and loss ",
+      "meta": {}
+    },
+    {
+      "time": "2026-02-26T19:17:14.131172",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.2603946924209595,
+        "faithfulness": 0.9846683740615845,
+        "answer_relevancy": 0.2823788523674011,
+        "hallucination": 0.015331625938415527,
+        "confidence": 0.45245519280433655
+      }
+    }
+  ],
+  "img1": [
+    {
+      "time": "2026-02-26T19:35:33.504863",
+      "role": "assistant",
+      "text": "Here are the most similar images.",
+      "meta": {
+        "hits": [
+          {
+            "rank": 1,
+            "score": 1.0,
+            "source": "src/data/images/just_image_images32(1).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman in a brown coat",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 2,
+            "score": 0.7298384308815002,
+            "source": "src/data/images/just_image_images61.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman standing in the woods",
+            "ocr_text_preview": "wg\nve anu\n\nis *",
+            "path": null
+          },
+          {
+            "rank": 3,
+            "score": 0.6293289661407471,
+            "source": "src/data/images/just_image_images179.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a man sitting in the grass",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 4,
+            "score": 0.5710465312004089,
+            "source": "src/data/images/just_image_images44(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman sitting on a couch with a dog",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 5,
+            "score": 0.5649917125701904,
+            "source": "src/data/images/just_image_images46(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog is sitting on a bench in the garden",
+            "ocr_text_preview": "",
+            "path": null
+          }
+        ]
+      }
+    },
+    {
+      "time": "2026-02-26T19:35:33.708093",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.4500453472137451,
+        "faithfulness": 0.2275625467300415,
+        "answer_relevancy": 0.3026760220527649,
+        "hallucination": 0.7724374532699585,
+        "confidence": 0.3207399845123291
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.570220",
+      "role": "user",
+      "text": "ask-image:text2img",
+      "meta": {
+        "query": "cat",
+        "image_path": null,
+        "top_k": 5
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.604202",
+      "role": "assistant",
+      "text": "Here are the most similar images.",
+      "meta": {
+        "hits": [
+          {
+            "rank": 1,
+            "score": 0.2708011865615845,
+            "source": "src/data/images/just_image_gettyimages-827755050-f4d5cb0f82b8e112b198b924c5b36311ddf3d92a.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a cat laying on a bed with its eyes closed",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 2,
+            "score": 0.22053933143615723,
+            "source": "src/data/images/just_image_6f19c26d-ddf2-4b4b-9d95-afb97cfd3a01.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a tablet with a blank screen on a white desk with office supplies",
+            "ocr_text_preview": "shutterstsck:",
+            "path": null
+          },
+          {
+            "rank": 3,
+            "score": 0.21177434921264648,
+            "source": "src/data/images/just_image_images46(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog is sitting on a bench in the garden",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 4,
+            "score": 0.20977449417114258,
+            "source": "src/data/images/just_image_images44(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman sitting on a couch with a dog",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 5,
+            "score": 0.20935043692588806,
+            "source": "src/data/images/just_image_images45(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog with a blue coat",
+            "ocr_text_preview": "",
+            "path": null
+          }
+        ]
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.719052",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.24787428975105286,
+        "faithfulness": 0.19524624943733215,
+        "answer_relevancy": 0.08907793462276459,
+        "hallucination": 0.8047537505626678,
+        "confidence": 0.15531910210847855
+      }
+    }
+  ]
+}

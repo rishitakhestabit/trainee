@@ -1,164 +1,135 @@
-# RETRIEVAL-STRATEGIES.md (Day 2) — Advanced Retrieval & Context Engineering (Updated)
+# DAY 2 — Advanced Retrieval + Context Engineering (Week7)
 
-This document explains the **Day-2 retrieval strategy** as implemented in this repo after the latest changes:
-- Query is **dynamic** (user asks any question)
-- Retrieval configuration is **fixed in code** (e.g., `TOP_K=5`, `FILTERS={"type":"pdf"}`)
-- Context builder is the **main runnable entrypoint** (`python -m src.pipelines.context_builder`)
+This day was about making retrieval, so the LLM gets **better context** (less random chunks) and the answer becomes **more accurate + less hallucination**.
 
 ---
 
-## 1) Objective (Day 2 Goal)
+## What I built (step by step)
 
-Day 2 improves retrieval quality over Day 1 by:
-- increasing **precision** (better chunks at the top)
-- reducing **hallucination** risk (LLM gets cleaner evidence)
-- ensuring retrieved context is **traceable** (source + page)
+### 1) Hybrid Retrieval (Semantic + Keyword)
+Goal: if embeddings miss something, **BM25 keyword search** can still catch it.
 
+- **Semantic search (FAISS + embeddings)** - understands meaning.
+- **Keyword search (BM25)** → catches exact words / names / terms.
+- Then I **merge both scores** into one final score.
 
----
-
-
-## 3) Hybrid Retrieval (Semantic + Keyword)
-
-- Semantic search understands meaning but can miss exact terms.
-- Keyword search matches exact words but fails on paraphrases.
-
-Hybrid retrieval runs both and merges candidate results:
-- **FAISS semantic search**: concept similarity (embeddings)
-- **BM25 keyword search**: exact term overlap (lexical)
-
-**Outcome:** higher recall + higher precision than either method alone.
-
-![Hybrid Retriever Execution](ss/day2ss/batch.png)
+File: `src/retriever/hybrid_retriever.py`
 
 ---
 
-## 4) Keyword Fallback
+### 2) Filters support (year/type)
+Goal: allow queries like:
 
-If semantic retrieval is weak/empty for a query, the pipeline can fall back to BM25 results.
-
-This helps especially for:
-- proper nouns
-- exact phrases
-- numeric or accounting terms
-- compliance-like queries
-
----
-
-## 5) Reranking (Cosine Reranker)
-
-After collecting candidates (semantic + keyword), we rerank them by recomputing relevance:
-
-- Embed the **query**
-- Embed candidate **chunk texts**
-- Score by cosine similarity (dot product if normalized)
-
-To preserve some original retrieval signal (BM25/FAISS), the final score blends both:
-
-    final_score = (1 - w) * cosine_similarity(query, chunk) + w * base_score
-
-Where:
-- `w = 0.20` (configured in `RerankConfig.weight_retrieval_score`)
-
-reranking matters: it fixes ordering issues from raw FAISS/BM25 and pushes the best evidence to the top.
-
----
-
-## 6) Deduplication (Remove Repeated Chunks)
-
-Because chunking uses overlap, multiple candidates can contain nearly identical text.
-
-Deduplication removes near-duplicates (based on normalized text prefix), keeping the best-scoring copy.
-
-Benefits:
-- saves context window tokens
-- reduces repetition
-- improves clarity for the LLM
-
----
-
-## 7) MMR (Max Marginal Relevance)
-
-Even after reranking, the top results can be too similar (same paragraph repeated).
-
-MMR selects a final list that balances:
-- **relevance** to query
-- **diversity** among selected chunks
-
-This prevents returning 5 chunks that all say the same thing.
-
-Config used:
-- `mmr_lambda = 0.7` (higher = more relevance, lower = more diversity)
-
----
-
-## 8) Filters (Enterprise Retrieval)
-
-The retriever supports filters for controlled retrieval, for example:
-
-- `{"type": "pdf"}`
-- `{"source_contains": "astrazeneca"}`
-- `{"tag": "rag"}`
-
-Note:
-- Fields like `{"year": "2024", "type": "policy"}` work only if those keys exist in your metadata.
-- Current metadata in this project includes keys like: `source`, `page`, `type`, `chunk_id`, `tags`.
-
----
-
-## 9) Traceable Context Builder (What gets sent to the LLM later)
-
-The final output is a single context string containing:
-- rank number
-- final score
-- source file path
-- page number (for PDFs)
-- chunk id
-
-Example:
-
-    [1] score=2.3576 | source=.../astrazeneca_2022.pdf | page=92 | type=pdf | chunk=1
-    <chunk text...>
-
-This makes the system:
-- auditable
-- debuggable
-- less hallucination-prone (LLM can ground its answer)
-
-
-![Returned context](ss/day2ss/response.png)
----
-
-## 10) Final Pipeline (as executed)
-
-User enters query (dynamic)
-→ Semantic Search (FAISS)
-→ Keyword Search (BM25)
-→ Merge candidates
-→ Deduplicate
-→ Rerank
-→ MMR select top_k
-→ Build traceable context
-
----
-
-## 11) How to run (current entrypoint)
-
-Run Day-2 end-to-end from the context builder:
-
-```bash
-python -m src.pipelines.context_builder
+```python
+query = "Explain how credit underwriting works"
+top_k = 5
+filters = {"year": "2024", "type": "policy"}
 ```
 
-- Query is entered at runtime (dynamic)
-- `TOP_K` and `FILTERS` are fixed in code (as per your latest change)
+If metadata is missing, I still try to pass filters using a fallback:
+- **year** inferred from filename/path if it contains `YYYY`
+- **type** inferred from `tags` or source path
+
+ File: `src/retriever/hybrid_retriever.py` (`_passes_filters()`)
 
 ---
 
-## 12) Outcome
+### 3) MMR (Max Marginal Relevance) for diversity
+Problem: top results can be repetitive (same topic, same chunk style).
 
-With these strategies, the retriever produces:
-- higher precision top-k results
-- less redundancy in context
-- traceable sources for each chunk
-- lower hallucination risk when a generator is added (Day 5)
+Solution: after getting a candidate pool, I use **MMR** to pick chunks that are:
+- relevant to query
+- but not duplicates of each other
+
+File: `src/retriever/hybrid_retriever.py` (`_mmr_select()`)
+
+---
+
+### 4) Reranking (Cross Encoder / fallback cosine)
+Hybrid retrieval gives a good candidate list, but final ordering is improved using **reranking**:
+
+- Best case: **CrossEncoder reranker** (more accurate scoring)
+- Fallback: cosine similarity rerank using embeddings
+
+File: `src/retriever/reranker.py`
+
+---
+
+### 5) Deduplication
+Even after MMR/reranking, duplicates can still appear (same chunk stored multiple times).
+
+So I remove duplicates using a hash of chunk text.
+
+File: `src/pipelines/context_builder.py` (`deduplicate()`)
+
+---
+
+### 6) Context packing (context window optimization)
+LLM context is limited, so I don’t blindly dump everything.
+
+I pack context until a **token budget** is hit:
+- keep short headers (source/page/year/type/tags)
+- keep a body preview (to reduce terminal spam)
+- stop when token budget reached
+
+File: `src/pipelines/context_builder.py` (`build_context()`)
+
+---
+
+### 7) Traceable sources 
+Along with the final context, I also output a structured `sources[]` list so we can always see:
+
+- which file
+- which page
+- rank
+- preview
+
+File: `src/pipelines/context_builder.py` (`sources` list)
+
+---
+
+## What each file does
+
+### `src/retriever/hybrid_retriever.py`
+Responsible for:
+- Loading FAISS vectorstore (`src/vectorstore/`)
+- Loading chunk corpus from `src/data/chunks/chunks.jsonl`
+- Building BM25 index
+- Running hybrid search:
+  - vector candidates + BM25 candidates
+  - normalize scores
+  - merge with `alpha`
+  - apply filters
+  - apply MMR (optional)
+- Returns **candidate documents** to reranker
+
+---
+
+### `src/retriever/reranker.py`
+Responsible for:
+- Reranking candidate docs using:
+  - `CrossEncoder` if available
+  - otherwise cosine similarity fallback
+- Returns **top_k docs with scores**
+
+---
+
+### `src/pipelines/context_builder.py`
+Responsible for:
+- Running the full Day-2 pipeline in order:
+  1. hybrid retrieval
+  2. rerank
+  3. deduplicate
+  4. pack context (token budget)
+  5. print final context + sources
+- Also provides an **interactive CLI mode**:
+  - if you run it without `--query`
+
+## Screenshots (Day-2 results)
+
+### Run output (example 1)
+![Day-2 output 1](src/ss/day2ss/queryres.png)
+
+### Run output (example 2)
+![Day-2 output 2](src/ss/day2ss/queryres2.png)
+

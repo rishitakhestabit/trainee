@@ -8,3 +8,8 @@ venv/
 *.pyc
 *pyo
 *pyd
+
+# Secrets
+Week7/.env
+.env
+.env.*

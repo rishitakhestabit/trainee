@@ -124,17 +124,3 @@ The GGUF model significantly reduced memory usage (\~428 MB), making it
 suitable for CPU inference environments. However, inference speed was
 slower compared to GPU-based HuggingFace models.
 
-# Key Trade-Offs
-
-  -----------------------------------------------------------------------
-  Model                   Advantage               Disadvantage
-  ----------------------- ----------------------- -----------------------
-  Base Model              Fast inference          No domain
-                                                  specialization
-
-  Fine-Tuned Model        Better HR domain        Slightly higher latency
-                          knowledge               
-
-  GGUF Quantized          Very low memory usage   Slower inference speed
-  -----------------------------------------------------------------------
-

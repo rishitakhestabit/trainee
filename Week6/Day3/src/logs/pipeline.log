@@ -1,0 +1,14 @@
+2026-03-11 00:09:11,760 - INFO - Day 3: classification training started
+2026-03-11 00:09:11,836 - INFO - X_train=(13516, 22), y_train_class=(13516,)
+2026-03-11 00:09:11,836 - INFO - Price threshold: $169,200
+2026-03-11 00:09:11,837 - INFO - Class distribution: [6764 6752] (0=Affordable, 1=Expensive)
+2026-03-11 00:09:11,837 - INFO - Training LogisticRegression...
+2026-03-11 00:09:12,150 - INFO - LogisticRegression CV ROC-AUC=0.921
+2026-03-11 00:09:12,150 - INFO - Training RandomForest...
+2026-03-11 00:09:29,367 - INFO - RandomForest CV ROC-AUC=0.952
+2026-03-11 00:09:29,367 - INFO - Training XGBoost...
+2026-03-11 00:09:32,073 - INFO - XGBoost CV ROC-AUC=0.964
+2026-03-11 00:09:32,073 - INFO - Training NeuralNetwork...
+2026-03-11 00:09:50,025 - INFO - NeuralNetwork CV ROC-AUC=0.945
+2026-03-11 00:09:50,025 - INFO - Best model: XGBoost
+2026-03-11 00:09:51,320 - INFO - Done. Best=XGBoost, Test ROC-AUC=0.964

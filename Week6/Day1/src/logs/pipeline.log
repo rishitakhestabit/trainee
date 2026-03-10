@@ -1,0 +1,8 @@
+2026-03-10 23:40:52,065 - INFO - Finished data cleaning
+2026-03-10 23:40:52,115 - INFO - Removed outliers using IQR method
+2026-03-10 23:40:52,308 - INFO - Processed data saved
+2026-03-10 23:40:52,308 - INFO - Pipeline finished successfully
+2026-03-10 23:52:53,191 - INFO - Finished data cleaning
+2026-03-10 23:52:53,255 - INFO - Removed outliers using IQR method
+2026-03-10 23:52:53,389 - INFO - Processed data saved
+2026-03-10 23:52:53,389 - INFO - Pipeline finished successfully

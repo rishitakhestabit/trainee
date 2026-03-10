@@ -1,0 +1,13 @@
+{
+  "best_roc_auc": 0.9661752115278576,
+  "best_params": {
+    "n_estimators": 161,
+    "max_depth": 8,
+    "learning_rate": 0.14067457141165876,
+    "subsample": 0.9812613037357972,
+    "colsample_bytree": 0.7085493352244137,
+    "random_state": 2025,
+    "eval_metric": "logloss"
+  },
+  "n_trials": 50
+}

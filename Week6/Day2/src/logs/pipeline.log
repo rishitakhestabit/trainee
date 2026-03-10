@@ -1,0 +1,11 @@
+2026-03-10 23:58:45,276 - INFO - Data loaded
+2026-03-10 23:58:45,285 - INFO - Generated 10 new features
+2026-03-10 23:58:45,290 - INFO - Train/test split done
+2026-03-10 23:58:45,314 - INFO - Features normalized
+2026-03-10 23:58:46,008 - INFO - Pipeline completed with 22 features
+2026-03-10 23:58:57,808 - INFO - Train data loaded: X(13516, 22), y(13516,)
+2026-03-10 23:58:57,830 - INFO - Dropped 4 correlated features: ['latitude', 'households', 'log_income', 'income_sq']
+2026-03-10 23:58:59,270 - INFO - Mutual information scores calculated
+2026-03-10 23:58:59,601 - INFO - Feature importance plot saved
+2026-03-10 23:58:59,601 - INFO - Top 5 features: ['longitude', 'median_income', 'dist_coast', 'ocean_proximity_INLAND', 'age_income']
+2026-03-10 23:58:59,601 - INFO - Feature selection completed

@@ -1,0 +1,11 @@
+feature,importance
+latitude,1.1823595
+ocean_proximity_INLAND,1.0455825
+median_income,0.9249164
+longitude,0.7794172
+dist_coast,0.6265539
+pop_per_hh,0.6201554
+rooms_per_hh,0.32937613
+bed_per_room,0.28243726
+log_income,0.26815546
+age_income,0.21235424

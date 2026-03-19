@@ -1,22 +1,21 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
+import time
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
-import json
+
 from src.memory.memory_store import memory
 from src.evaluation.rag_eval import RAGEvaluator
 
-# Day-2 text retrieval pipeline (you already have these)
+# Text RAG
 from src.retriever.hybrid_retriever import HybridRetriever
 from src.retriever.reranker import Reranker
 from src.pipelines.context_builder import deduplicate, build_context, ContextConfig
+from src.pipelines.ingest import run_ingestion
 
-# Day-3 image search (your existing interactive file is src/retriever/image_search.py,
-# but for API we call CLIP embedding + FAISS search using your saved index/meta)
+# Image RAG
 from src.retriever.image_search import (
     META_PATH as IMG_META_PATH,
     INDEX_PATH as IMG_INDEX_PATH,
@@ -28,7 +27,7 @@ from src.retriever.image_search import (
 )
 from src.embeddings.clip_embedder import CLIPConfig, CLIPEembedder
 
-# Day-4 SQL pipeline runner (your existing)
+# SQL
 from src.pipelines.sql_pipeline import (
     DEFAULT_DB_PATH,
     load_schema_sqlite,
@@ -39,226 +38,259 @@ from src.pipelines.sql_pipeline import (
 from src.generator.sql_generator import generate_sql, correct_sql, SQLGenConfig
 
 
-app = FastAPI(title="Week7 Capstone RAG API")
+app = FastAPI(title="Production RAG System")
 evaluator = RAGEvaluator()
 
-# --------- Load reusable components once ----------
-text_retriever = HybridRetriever()
-text_reranker = Reranker()
+# ================= INIT =================
+# HybridRetriever loads chunks.jsonl ONCE at startup to build BM25.
+# After a new PDF is ingested, we must reload it so BM25 sees new chunks.
+# We store it in a mutable dict so the /ingest endpoint can replace it.
+_state: Dict[str, Any] = {}
 
-# Image resources (index + meta + clip embedder)
+def _init_retriever():
+    """Load (or reload) the HybridRetriever and store in _state."""
+    _state["retriever"] = HybridRetriever()
+
+def get_retriever() -> HybridRetriever:
+    if "retriever" not in _state:
+        _init_retriever()
+    return _state["retriever"]
+
+# Initial load at startup
+_init_retriever()
+
+reranker = Reranker()
+
 img_meta = _img_load_meta(IMG_META_PATH)
 img_index = _img_load_faiss(IMG_INDEX_PATH)
-clip = CLIPEembedder(CLIPConfig(model_name="openai/clip-vit-base-patch32"))
+clip = CLIPEembedder(CLIPConfig())
 
-# SQL schema
 sql_schema = load_schema_sqlite(DEFAULT_DB_PATH)
 
 
-# -------------------- Request/Response Models --------------------
+# ================= MODELS =================
 class AskRequest(BaseModel):
-    session_id: str = Field(default="demo1")
+    session_id: str = "demo"
     query: str
-    filters: Dict[str, Any] = Field(default_factory=dict)  # e.g. {"year":"2024","type":"policy"}
+    filters: Dict[str, Any] = Field(default_factory=dict)
     top_k: int = 5
-
-
-class AskResponse(BaseModel):
-    answer: str
-    context: str
-    sources: List[Dict[str, Any]]
-    eval: Dict[str, Any]
 
 
 class AskImageRequest(BaseModel):
-    session_id: str = Field(default="demo1")
-    mode: str = Field(..., description="text2img | img2img | img2text")
+    session_id: str = "demo"
+    mode: str
     query: Optional[str] = None
     image_path: Optional[str] = None
-    top_k: int = 5
+    top_k: int = 3
 
 
 class AskSQLRequest(BaseModel):
-    session_id: str = Field(default="demo1")
+    session_id: str = "demo"
     question: str
 
 
-class AskSQLResponse(BaseModel):
-    sql: str
-    summary: str
-    eval: Dict[str, Any]
-
-
-# -------------------- Helpers --------------------
+# ================= HELPER =================
 def _answer_from_context(query: str, context: str) -> str:
-    """
-    For Day-5 capstone, answer generation can be simple:
-    if context empty => say not found.
-    (You can later swap to an LLM answerer, but this passes launchpad requirements.)
-    """
     if not context.strip():
-        return "I couldn't find relevant context in your documents for that question."
-    # simple: return context as "answer" starter
-    return f"Based on the retrieved context:\n\n{context[:900]}"
-
-# -------------------- Routes --------------------
-@app.get("/")
-def home():
-    return {"status": "ok"}
+        return "No relevant information found."
+    return f"Based on context:\n\n{context[:900]}"
 
 
-@app.post("/ask", response_model=AskResponse)
+# ================= SOURCE FILTER =================
+def extract_source_from_query(query: str, candidates) -> Optional[str]:
+    """
+    Check if user mentioned a PDF filename in their query.
+    e.g. "what is RAG in week-7" → matches "Week-7-1766484412108.pdf"
+    Uses fuzzy prefix matching so user doesn't need the full filename.
+    """
+    query_lower = query.lower()
+
+    for d in candidates:
+        source = str(d.metadata.get("source", "")).lower()
+        clean_source = source.replace(".pdf", "")  # strip extension for matching
+
+        if clean_source and clean_source in query_lower:
+            return d.metadata.get("source")
+
+    return None
+
+
+# =========================================================
+# TEXT RAG
+# =========================================================
+@app.post("/ask")
 def ask(req: AskRequest):
-    # LOG user query
-    memory.add(req.session_id, "user", req.query, meta={"filters": req.filters, "top_k": req.top_k})
+    start = time.time()
 
-    # 1) retrieve candidates (hybrid + filters + MMR inside HybridRetriever)
-    candidates = text_retriever.retrieve_candidates(req.query, top_k=req.top_k, filters=req.filters)
+    try:
+        memory.add(req.session_id, "user", req.query)
 
-    if not candidates:
-        answer = "I couldn't find relevant context in your documents for that question."
-        scores = evaluator.score(req.query, answer, context="")
+        # Always use the current retriever (reloaded after each ingest)
+        retriever = get_retriever()
+
+        # -------- RETRIEVE --------
+        candidates = retriever.retrieve_candidates(
+            req.query, top_k=req.top_k, filters=req.filters
+        )
+
+        # Check if user mentioned a specific PDF by name
+        source_filter = extract_source_from_query(req.query, candidates)
+
+        if source_filter:
+            # User named a file → filter to only that file's chunks
+            candidates = [
+                d for d in candidates
+                if d.metadata.get("source") == source_filter
+            ]
+        # else: no filter → retriever already sorted by latest uploaded_at
+
+        if not candidates:
+            answer = "No context found."
+            scores = evaluator.score(req.query, answer, "")
+            return {
+                "answer": answer,
+                "eval": {**scores, "latency": round(time.time() - start, 3)}
+            }
+
+        # -------- RERANK --------
+        reranked = reranker.rerank(req.query, candidates, top_k=req.top_k)
+
+        docs = []
+        for item in reranked:
+            if isinstance(item, tuple):
+                docs.append(item[0])
+            else:
+                docs.append(item)
+
+        docs = deduplicate(docs)
+
+        # -------- CONTEXT --------
+        result = build_context(docs, ContextConfig(top_k=req.top_k))
+
+        if isinstance(result, tuple) and len(result) == 2:
+            context, sources = result
+        else:
+            context = result if isinstance(result, str) else ""
+            sources = []
+
+        answer = _answer_from_context(req.query, context)
+
+        # -------- EVALUATION --------
+        scores = evaluator.score(req.query, answer, context)
+
+        # -------- SELF REFLECTION --------
+        if scores["faithfulness"] < 0.4:
+            answer = "Low confidence answer. Please verify."
+            scores = evaluator.score(req.query, answer, context)
+
         memory.add(req.session_id, "assistant", answer)
         memory.add(req.session_id, "evaluation", "scores", meta=scores)
-        return AskResponse(answer=answer, context="", sources=[], eval=scores)
 
-    # 2) rerank
-    reranked = text_reranker.rerank(req.query, candidates, top_k=req.top_k)
-    final_docs = [d for d, _ in reranked]
+        return {
+            "answer": answer,
+            "sources": sources,
+            "eval": {**scores, "latency": round(time.time() - start, 3)}
+        }
 
-    # 3) dedup
-    final_docs = deduplicate(final_docs)
-
-    # 4) pack context window
-    ctx_cfg = ContextConfig(top_k=req.top_k)
-    context_text, sources = build_context(final_docs, ctx_cfg)
-
-    # 5) make answer
-    answer = _answer_from_context(req.query, context_text)
-
-    # LOG assistant answer
-    memory.add(req.session_id, "assistant", answer)
-
-    # 6) eval scores
-    scores = evaluator.score(req.query, answer, context_text)
-
-    # LOG evaluation
-    memory.add(req.session_id, "evaluation", "scores", meta=scores)
-
-    return AskResponse(answer=answer, context=context_text, sources=sources, eval=scores)
+    except Exception as e:
+        return {"error": str(e)}
 
 
+# =========================================================
+# IMAGE RAG
+# =========================================================
 @app.post("/ask-image")
 def ask_image(req: AskImageRequest):
-    memory.add(req.session_id, "user", f"ask-image:{req.mode}", meta={"query": req.query, "image_path": req.image_path, "top_k": req.top_k})
+    start = time.time()
 
-    mode = req.mode.strip().lower()
-    if mode not in ("text2img", "img2img", "img2text"):
-        ans = "Invalid mode. Use: text2img | img2img | img2text"
-        scores = evaluator.score(req.query or "image-query", ans, context="")
-        memory.add(req.session_id, "assistant", ans)
-        memory.add(req.session_id, "evaluation", "scores", meta=scores)
-        return {"answer": ans, "results": [], "eval": scores}
+    try:
+        if req.mode == "text2img":
+            if not req.query:
+                return {"error": "Query required for text2img"}
+            vec = clip.embed_text(req.query)
 
-    # build query embedding
-    if mode == "text2img":
-        if not req.query:
-            ans = "Missing query for text2img."
-            scores = evaluator.score("text2img", ans, context="")
-            memory.add(req.session_id, "assistant", ans)
-            memory.add(req.session_id, "evaluation", "scores", meta=scores)
-            return {"answer": ans, "results": [], "eval": scores}
-        qvec = clip.embed_text(req.query)
-        context_for_eval = req.query
+        elif req.mode == "img2img":
+            if not req.image_path:
+                return {"error": "Image required for img2img"}
+            img_path = Path(req.image_path)
+            if not img_path.exists():
+                return {"error": "Image path not found"}
+            img = _img_open_image(img_path)
+            vec = clip.embed_image(img)
 
-    else:
-        if not req.image_path:
-            ans = "Missing image_path for img2img/img2text."
-            scores = evaluator.score("img", ans, context="")
-            memory.add(req.session_id, "assistant", ans)
-            memory.add(req.session_id, "evaluation", "scores", meta=scores)
-            return {"answer": ans, "results": [], "eval": scores}
+        else:
+            return {"error": "Invalid mode"}
 
-        p = Path(req.image_path)
-        if not p.exists():
-            ans = f"Image path not found: {req.image_path}"
-            scores = evaluator.score("img", ans, context="")
-            memory.add(req.session_id, "assistant", ans)
-            memory.add(req.session_id, "evaluation", "scores", meta=scores)
-            return {"answer": ans, "results": [], "eval": scores}
+        scores_arr, idxs_arr = _img_search(img_index, vec, req.top_k)
+        hits = _img_make_hits(img_meta, scores_arr, idxs_arr, req.top_k)
 
-        img = _img_open_image(p)
-        qvec = clip.embed_image(img)
-        context_for_eval = f"image:{req.image_path}"
+        eval_scores = evaluator.score(
+            req.query or "image", "image results", json.dumps(hits)
+        )
 
-    # search
-    scores_arr, idxs_arr = _img_search(img_index, qvec, req.top_k)
-    hits = _img_make_hits(img_meta, scores_arr, idxs_arr, req.top_k)
+        return {
+            "results": hits[:3],
+            "eval": {**eval_scores, "latency": round(time.time() - start, 3)}
+        }
 
-    if mode in ("text2img", "img2img"):
-        ans = "Here are the most similar images."
-        context_text = json.dumps(hits[:3], indent=2)
-    else:
-        # img2text: give OCR+caption as "answer context"
-        parts = []
-        for h in hits:
-            parts.append(f"source={h.get('source')} page={h.get('page')}\ncaption={h.get('caption')}\nocr={h.get('ocr_text_preview')}\n")
-        context_text = "\n---\n".join(parts)
-        ans = "Extracted context from similar images (caption + OCR preview)."
-
-    memory.add(req.session_id, "assistant", ans, meta={"hits": hits})
-
-    eval_scores = evaluator.score(context_for_eval, ans, context_text)
-    memory.add(req.session_id, "evaluation", "scores", meta=eval_scores)
-
-    return {"answer": ans, "results": hits, "eval": eval_scores}
+    except Exception as e:
+        return {"error": str(e)}
 
 
-@app.post("/ask-sql", response_model=AskSQLResponse)
+# =========================================================
+# SQL RAG
+# =========================================================
+@app.post("/ask-sql")
 def ask_sql(req: AskSQLRequest):
-    memory.add(req.session_id, "user", req.question)
+    start = time.time()
 
-    gen_cfg = SQLGenConfig(temperature=0.0)
-    sql = generate_sql(req.question, sql_schema, cfg=gen_cfg)
+    try:
+        memory.add(req.session_id, "user", req.question)
 
-    ok, msg = validate_sql(sql)
-    if not ok:
-        ans = f"Validation failed: {msg}"
-        eval_scores = evaluator.score(req.question, ans, context="")
-        memory.add(req.session_id, "assistant", ans, meta={"sql": sql})
-        memory.add(req.session_id, "evaluation", "scores", meta=eval_scores)
-        return AskSQLResponse(sql=sql, summary=ans, eval=eval_scores)
+        cfg = SQLGenConfig(temperature=0.0)
+        sql = generate_sql(req.question, sql_schema, cfg=cfg)
 
-    # execute with correction loop
-    attempts = 0
-    last_err = None
-    while attempts <= gen_cfg.max_retries:
-        try:
-            cols, rows = execute_sqlite(DEFAULT_DB_PATH, sql)
-            summary = summarize_result(cols, rows)
-            memory.add(req.session_id, "assistant", summary, meta={"sql": sql})
+        ok, msg = validate_sql(sql)
+        if not ok:
+            return {"error": msg}
 
-            eval_scores = evaluator.score(req.question, summary, context=sql)
-            memory.add(req.session_id, "evaluation", "scores", meta=eval_scores)
+        attempts = 0
+        while attempts <= cfg.max_retries:
+            try:
+                cols, rows = execute_sqlite(DEFAULT_DB_PATH, sql)
+                summary = summarize_result(cols, rows)
+                eval_scores = evaluator.score(req.question, summary, sql)
+                return {
+                    "sql": sql,
+                    "summary": summary,
+                    "eval": {**eval_scores, "latency": round(time.time() - start, 3)}
+                }
+            except Exception as e:
+                attempts += 1
+                sql = correct_sql(req.question, sql_schema, sql, str(e), cfg)
 
-            return AskSQLResponse(sql=sql, summary=summary, eval=eval_scores)
-        except Exception as e:
-            last_err = str(e)
-            attempts += 1
-            if attempts > gen_cfg.max_retries:
-                break
-            sql = correct_sql(req.question, sql_schema, bad_sql=sql, error_msg=last_err, cfg=gen_cfg)
+        return {"error": "SQL failed after retries"}
 
-            ok, msg = validate_sql(sql)
-            if not ok:
-                summary = f"Validation failed after correction: {msg}"
-                eval_scores = evaluator.score(req.question, summary, context="")
-                memory.add(req.session_id, "assistant", summary, meta={"sql": sql})
-                memory.add(req.session_id, "evaluation", "scores", meta=eval_scores)
-                return AskSQLResponse(sql=sql, summary=summary, eval=eval_scores)
+    except Exception as e:
+        return {"error": str(e)}
 
-    summary = f"SQL execution failed: {last_err}"
-    eval_scores = evaluator.score(req.question, summary, context=sql)
-    memory.add(req.session_id, "assistant", summary, meta={"sql": sql})
-    memory.add(req.session_id, "evaluation", "scores", meta=eval_scores)
-    return AskSQLResponse(sql=sql, summary=summary, eval=eval_scores)
+
+# =========================================================
+# INGEST
+# =========================================================
+@app.post("/ingest")
+def ingest(data: dict):
+    try:
+        if "file_path" not in data:
+            return {"error": "file_path missing"}
+
+        # Run ingestion — saves to FAISS + chunks.jsonl
+        result = run_ingestion(data["file_path"])
+
+        _init_retriever()
+        print("[app] HybridRetriever reloaded with latest chunks.jsonl")
+
+        return result
+
+    except Exception as e:
+        return {"error": str(e)}

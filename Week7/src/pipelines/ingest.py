@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import argparse
 import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Iterable, List
 
 from langchain_community.document_loaders import (
     PyPDFLoader,
@@ -16,34 +15,35 @@ from langchain_community.document_loaders import (
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
+import time
 
 from src.embeddings.embedder import EmbedderConfig, LocalEmbedder
 
 
-# ------------------ DEFAULT PROJECT PATHS ------------------
+# ================= PATHS =================
 RAW_DIR = Path("src/data/raw")
-CLEANED_DIR = Path("src/data/cleaned")
 CHUNKS_DIR = Path("src/data/chunks")
-VECTORSTORE_DIR = Path("src/vectorstore")  # index.faiss + index.pkl
+CHUNKS_JSONL = CHUNKS_DIR / "chunks.jsonl"
+VECTORSTORE_DIR = Path("src/vectorstore")
 
-for p in [RAW_DIR, CLEANED_DIR, CHUNKS_DIR, VECTORSTORE_DIR]:
+for p in [RAW_DIR, CHUNKS_DIR, VECTORSTORE_DIR]:
     p.mkdir(parents=True, exist_ok=True)
 
 
-# ------------------ CONFIG ------------------
+# ================= CONFIG =================
 @dataclass
 class IngestConfig:
     tags: List[str]
-    chunk_min_tokens: int = 500
-    chunk_max_tokens: int = 800
-    chunk_overlap_tokens: int = 80
+    chunk_min_tokens: int = 30        # lowered from 200 — avoids filtering all chunks
+    chunk_max_tokens: int = 500
+    chunk_overlap_tokens: int = 50
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
 
 
-# ------------------ TOKEN LENGTH FUNCTION ------------------
+# ================= TOKENIZER =================
 def _get_hf_tokenizer(model_name: str):
     try:
-        from transformers import AutoTokenizer  # type: ignore
+        from transformers import AutoTokenizer
         return AutoTokenizer.from_pretrained(model_name, use_fast=True)
     except Exception:
         return None
@@ -51,21 +51,12 @@ def _get_hf_tokenizer(model_name: str):
 
 def _token_length_fn_factory(model_name: str):
     tok = _get_hf_tokenizer(model_name)
-
     if tok is None:
-        # fallback approximate token count
-        def length_fn(text: str) -> int:
-            return max(1, int(len(text.split()) / 0.75))
-
-        return length_fn
-
-    def length_fn(text: str) -> int:
-        return len(tok.encode(text, add_special_tokens=False))
-
-    return length_fn
+        return lambda text: max(1, int(len(text.split()) / 0.75))
+    return lambda text: len(tok.encode(text, add_special_tokens=False))
 
 
-# ------------------ CLEANING ------------------
+# ================= CLEAN =================
 _whitespace_re = re.compile(r"\s+")
 
 
@@ -75,116 +66,47 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-# ------------------ LOADERS ------------------
+# ================= LOAD =================
 def _load_one_file(path: Path) -> List[Document]:
     ext = path.suffix.lower()
-
     if ext == ".pdf":
         return PyPDFLoader(str(path)).load()
-
     if ext in [".txt", ".md"]:
         return TextLoader(str(path), encoding="utf-8").load()
-
     if ext == ".csv":
         return CSVLoader(str(path), encoding="utf-8").load()
-
     if ext in [".docx", ".doc"]:
         return UnstructuredWordDocumentLoader(str(path)).load()
-
     return []
 
 
-def load_documents(raw_dir: Path) -> List[Document]:
-    docs: List[Document] = []
-    for fp in raw_dir.rglob("*"):
-        if fp.is_file() and fp.suffix.lower() in {".pdf", ".txt", ".md", ".csv", ".docx", ".doc"}:
-            docs.extend(_load_one_file(fp))
-    return docs
+# ================= METADATA =================
+def enrich_metadata(
+    docs: Iterable[Document],
+    tags: List[str],
+    file_path: str
+) -> List[Document]:
+    out = []
+    # Always store ONLY bare filename — never full/relative path.
+    # e.g. "Week-7-1766484412108.pdf" not "src/data/raw/Week-7-...pdf"
+    filename = Path(file_path).name
 
-
-# ------------------ METADATA HELPERS (NEW FOR DAY 2 FILTERS) ------------------
-def _infer_year_from_source(source: str) -> Optional[str]:
-    m = re.search(r"(19|20)\d{2}", source)
-    return m.group(0) if m else None
-
-
-def _infer_type_from_source(source: str, tags: List[str]) -> Optional[str]:
-    
-    s = source.lower()
-    joined_tags = " ".join([t.lower() for t in tags])
-
-    candidates = ["policy", "report", "manual", "contract", "guideline", "sop", "invoice", "presentation"]
-    for c in candidates:
-        if c in s or c in joined_tags:
-            return c
-    return None
-
-
-def _merge_tags(existing: Any, default_tags: List[str]) -> List[str]:
-    if isinstance(existing, list):
-        base = [str(t) for t in existing]
-    elif isinstance(existing, str):
-        base = [t.strip() for t in existing.split(",") if t.strip()]
-    else:
-        base = []
-
-    # ensure defaults included
-    for t in default_tags:
-        if t not in base:
-            base.append(t)
-
-    # remove duplicates while preserving order
-    seen = set()
-    out: List[str] = []
-    for t in base:
-        if t not in seen:
-            seen.add(t)
-            out.append(t)
-    return out
-
-
-# ------------------ METADATA (UPDATED) ------------------
-def enrich_metadata(docs: Iterable[Document], default_tags: List[str]) -> List[Document]:
-    """
-    Day 1 required:
-      - source
-      - page
-      - tags
-
-    Day 2 requires filters like:
-      filters = {"year":"2024", "type":"policy"}
-
-    So we also ensure:
-      - year
-      - type
-    """
-    out: List[Document] = []
     for d in docs:
-        src = d.metadata.get("source") or d.metadata.get("file_path") or "unknown"
-        page = d.metadata.get("page")  # can be None
-
-        tags = _merge_tags(d.metadata.get("tags"), default_tags)
-
-        year = d.metadata.get("year") or _infer_year_from_source(str(src))
-        doc_type = d.metadata.get("type") or _infer_type_from_source(str(src), tags)
-
         out.append(
             Document(
                 page_content=d.page_content,
                 metadata={
                     **d.metadata,
-                    "source": src,
-                    "page": page,
+                    "source": filename,
+                    "uploaded_at": time.time(),
                     "tags": tags,
-                    "year": year,
-                    "type": doc_type,
-                },
+                }
             )
         )
     return out
 
 
-# ------------------ CHUNKING ------------------
+# ================= CHUNK =================
 def chunk_documents(docs: List[Document], cfg: IngestConfig) -> List[Document]:
     length_fn = _token_length_fn_factory(cfg.embedding_model_name)
 
@@ -192,82 +114,221 @@ def chunk_documents(docs: List[Document], cfg: IngestConfig) -> List[Document]:
         chunk_size=cfg.chunk_max_tokens,
         chunk_overlap=cfg.chunk_overlap_tokens,
         length_function=length_fn,
-        separators=["\n\n", "\n", ".", " ", ""],
     )
 
-    cleaned_docs: List[Document] = [Document(page_content=clean_text(d.page_content), metadata=d.metadata) for d in docs]
+    cleaned = [
+        Document(page_content=clean_text(d.page_content), metadata=d.metadata)
+        for d in docs
+        if clean_text(d.page_content)
+    ]
 
-    chunks = splitter.split_documents(cleaned_docs)
+    chunks = splitter.split_documents(cleaned)
+    filtered = [c for c in chunks if length_fn(c.page_content) >= cfg.chunk_min_tokens]
 
-    filtered: List[Document] = []
-    for c in chunks:
-        if length_fn(c.page_content) >= cfg.chunk_min_tokens:
-            filtered.append(c)
+    print(
+        f"[ingest] pages={len(docs)} | cleaned={len(cleaned)} | "
+        f"chunks={len(chunks)} | after_filter={len(filtered)}"
+    )
 
     return filtered
 
 
-# ------------------ SAVE CHUNKS ------------------
-def save_chunks_jsonl(chunks: List[Document], out_path: Path) -> None:
-    with out_path.open("w", encoding="utf-8") as f:
-        for i, d in enumerate(chunks):
-            f.write(
-                json.dumps(
-                    {"id": i, "text": d.page_content, "metadata": d.metadata},
-                    ensure_ascii=False,
-                )
-                + "\n"
-            )
+# ================= CLEAN OLD JSONL ENTRIES =================
+def _clean_chunks_jsonl() -> None:
+    """
+    ✅ FIX for old PDFs appearing in answers:
+    Previous ingests saved source as full paths like:
+        "data/Week-2-....pdf"
+        "src/data/raw/astrazeneca_2022.pdf"
+    These pollute BM25 retrieval so old irrelevant PDFs keep appearing.
+
+    This rewrites chunks.jsonl keeping ONLY entries with bare filenames
+    (no slashes). Called automatically at the start of every run_ingestion().
+    Safe to call repeatedly — skips if nothing dirty found.
+    """
+    if not CHUNKS_JSONL.exists():
+        return
+
+    clean_lines = []
+    dirty_count = 0
+
+    with CHUNKS_JSONL.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+                source = rec.get("metadata", {}).get("source", "")
+                # Reject entries whose source contains any path separator
+                if "/" not in source and "\\" not in source:
+                    clean_lines.append(line)
+                else:
+                    dirty_count += 1
+            except Exception:
+                continue
+
+    if dirty_count > 0:
+        print(
+            f"[ingest] Removed {dirty_count} old bad-path entries from chunks.jsonl"
+        )
+        with CHUNKS_JSONL.open("w", encoding="utf-8") as f:
+            for line in clean_lines:
+                f.write(line + "\n")
+    else:
+        print("[ingest] chunks.jsonl is clean — no dirty entries found")
 
 
-# ------------------ FAISS BUILD ------------------
-def build_faiss(chunks: List[Document], embedder: LocalEmbedder, out_dir: Path) -> None:
-    vs = FAISS.from_documents(chunks, embedder.langchain_embeddings)
-    vs.save_local(str(out_dir))
+# ================= SAVE CHUNKS JSONL =================
+def save_chunks_jsonl(chunks: List[Document]) -> None:
+    """
+    Appends new chunks to chunks.jsonl incrementally.
+    HybridRetriever reads this at startup to build its BM25 corpus.
+    Without this, BM25 and FAISS go out of sync → causes retrieval errors.
+    """
+    CHUNKS_JSONL.parent.mkdir(parents=True, exist_ok=True)
+    with CHUNKS_JSONL.open("a", encoding="utf-8") as f:
+        for chunk in chunks:
+            record = {
+                "text": chunk.page_content,
+                "metadata": chunk.metadata,
+            }
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
-# ------------------ CLI (OPTIONAL) ------------------
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--raw_dir", type=str, default=None)
-    parser.add_argument("--tags", type=str, default=None)
-    parser.add_argument("--embedding_model", type=str, default=None)
-    return parser.parse_args()
+# ================= EMBEDDER (with torch meta fix) =================
+def _make_embedder(model_name: str) -> LocalEmbedder:
+    """
+    Handles torch meta tensor error:
+    'Cannot copy out of meta tensor; no data!'
+    Clearing CUDA cache before loading avoids this.
+    """
+    try:
+        import torch
+        if hasattr(torch, "cuda"):
+            torch.cuda.empty_cache()
+    except Exception:
+        pass
+
+    return LocalEmbedder(
+        EmbedderConfig(
+            model_name=model_name,
+            normalize_embeddings=True,
+        )
+    )
 
 
-def main():
-    args = parse_args()
+# ================= FAISS (INCREMENTAL) =================
+def build_faiss(chunks: List[Document], embedder: LocalEmbedder) -> None:
+    index_path = VECTORSTORE_DIR / "index.faiss"
 
-    # Defaults so you can run: python -m src.pipelines.ingest
-    raw_dir = Path(args.raw_dir) if args.raw_dir else RAW_DIR
-    tags_str = args.tags if args.tags else "week7,text-rag"
-    embedding_model = args.embedding_model if args.embedding_model else "sentence-transformers/all-MiniLM-L6-v2"
+    if index_path.exists():
+        vs = FAISS.load_local(
+            str(VECTORSTORE_DIR),
+            embedder.langchain_embeddings,
+            allow_dangerous_deserialization=True,
+        )
+        vs.add_documents(chunks)
+    else:
+        vs = FAISS.from_documents(chunks, embedder.langchain_embeddings)
 
-    tags = [t.strip() for t in tags_str.split(",") if t.strip()]
-    cfg = IngestConfig(tags=tags, embedding_model_name=embedding_model)
+    vs.save_local(str(VECTORSTORE_DIR))
 
-    print(f"[INGEST] raw_dir={raw_dir}")
-    print(f"[INGEST] tags={cfg.tags}")
-    print(f"[INGEST] embedding_model={cfg.embedding_model_name}")
 
-    docs = load_documents(raw_dir)
-    print(f"[INGEST] Loaded docs: {len(docs)}")
+# ================= API FUNCTION =================
+def run_ingestion(file_path: str) -> dict:
+    """
+    Called by FastAPI /ingest endpoint when user uploads a file.
 
-    docs = enrich_metadata(docs, default_tags=cfg.tags)
-    print("[INGEST] Metadata ensured: source/page/tags/year/type")
+    Flow:
+      1. Clean old bad-path entries from chunks.jsonl  ← fixes old PDFs in answers
+      2. Load file
+      3. Enrich metadata — source = bare filename only
+      4. Chunk with lowered min (30 tokens)
+      5. Fallback if still empty
+      6. Build/update FAISS
+      7. Append to chunks.jsonl for BM25
+    """
+    # Step 1: Remove old dirty entries every time a new file is ingested
+    _clean_chunks_jsonl()
 
+    path = Path(file_path)
+
+    if not path.exists():
+        raise ValueError(f"File not found: {file_path}")
+
+    docs = _load_one_file(path)
+
+    if not docs:
+        raise ValueError("Unsupported or empty file")
+
+    cfg = IngestConfig(tags=["uploaded", "rag"])
+    docs = enrich_metadata(docs, cfg.tags, file_path)
     chunks = chunk_documents(docs, cfg)
-    print(f"[INGEST] Chunks created (filtered): {len(chunks)}")
 
-    chunks_path = CHUNKS_DIR / "chunks.jsonl"
-    save_chunks_jsonl(chunks, chunks_path)
-    print(f"[INGEST] Saved chunks: {chunks_path}")
+    # Fallback: if min-token filter removed everything, keep all non-empty chunks
+    if not chunks:
+        print("[ingest] WARNING: min-token filter removed all chunks — using fallback")
+        length_fn = _token_length_fn_factory(cfg.embedding_model_name)
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=cfg.chunk_max_tokens,
+            chunk_overlap=cfg.chunk_overlap_tokens,
+            length_function=length_fn,
+        )
+        cleaned = [
+            Document(page_content=clean_text(d.page_content), metadata=d.metadata)
+            for d in docs
+            if clean_text(d.page_content)
+        ]
+        chunks = [
+            c for c in splitter.split_documents(cleaned)
+            if c.page_content.strip()
+        ]
 
-    embedder = LocalEmbedder(EmbedderConfig(model_name=cfg.embedding_model_name, normalize_embeddings=True))
-    build_faiss(chunks, embedder, VECTORSTORE_DIR)
-    print(f"[INGEST] Saved FAISS: {VECTORSTORE_DIR}/index.faiss + index.pkl")
+    if not chunks:
+        raise ValueError(
+            "No text could be extracted. This PDF may be a scanned image. "
+            "Please use a text-based PDF."
+        )
 
-    print("[INGEST] Day-1 updated: now supports Day-2 filters (year/type).")
+    embedder = _make_embedder(cfg.embedding_model_name)
+    build_faiss(chunks, embedder)
+    save_chunks_jsonl(chunks)
+
+    print(f"[ingest]  Done: {path.name} → {len(chunks)} chunks saved")
+    return {"status": "success", "chunks": len(chunks)}
+
+
+# ================= CLI =================
+def main() -> None:
+    """
+    Bulk ingest all files from src/data/raw/.
+    Usage: python -m src.pipelines.ingest
+    """
+    all_chunks: List[Document] = []
+    cfg = IngestConfig(tags=["bulk"])
+
+    for fp in RAW_DIR.rglob("*"):
+        if not fp.is_file():
+            continue
+        loaded = _load_one_file(fp)
+        if not loaded:
+            print(f"Skipped: {fp}")
+            continue
+        enriched = enrich_metadata(loaded, cfg.tags, str(fp))
+        chunks = chunk_documents(enriched, cfg)
+        all_chunks.extend(chunks)
+        print(f"  {fp.name} → {len(chunks)} chunks")
+
+    if not all_chunks:
+        print("No documents found in src/data/raw/")
+        return
+
+    embedder = _make_embedder(cfg.embedding_model_name)
+    build_faiss(all_chunks, embedder)
+    save_chunks_jsonl(all_chunks)
+
+    print(f"\n Done. Total chunks: {len(all_chunks)}")
 
 
 if __name__ == "__main__":

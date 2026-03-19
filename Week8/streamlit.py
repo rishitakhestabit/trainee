@@ -24,14 +24,14 @@ top_k = st.sidebar.slider("Top-K", 10, 100, 40)
 if mode == "Chat":
     st.subheader("Chat Mode")
     system_prompt = st.sidebar.text_area(
-    "System Prompt",
-    """You are an HR assistant. Answer the user's question clearly and concisely.
-
+        "System Prompt",
+    """You are a knowledgeable AI assistant.
     Rules:
-    - Provide only the direct answer.
-    - Do NOT generate follow-up questions.
-    - Do NOT simulate conversations.
-    - Do NOT include 'User:' or 'Assistant:' text."""
+    - Answer the question directly and completely.
+    - Do NOT ask follow-up questions or request clarifications.
+    - Do NOT simulate a conversation or generate fake dialogues.
+    - Do NOT include 'User:' or 'Assistant:' in your response.
+    - Give a full, complete answer in one response."""
     )
     
     if "messages" not in st.session_state:

@@ -340,8 +340,31 @@ h2, h3 { color: #e6edf3 !important; }
     background: #161b22 !important;
     border: 2px dashed #30363d !important;
     border-radius: 10px !important;
+    color: #e6edf3 !important;
 }
-[data-testid="stFileUploaderDropzone"] { background: #161b22 !important; }
+[data-testid="stFileUploaderDropzone"] { 
+    background: #161b22 !important;
+    color: #e6edf3 !important;
+}
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] p,
+[data-testid="stFileUploaderDropzone"] div {
+    color: #e6edf3 !important;
+}
+[data-testid="stFileUploaderDropzoneInstructions"] {
+    color: #e6edf3 !important;
+}
+[data-testid="stFileUploaderDropzoneInstructions"] span,
+[data-testid="stFileUploaderDropzoneInstructions"] small {
+    color: #8b949e !important;
+}
+[data-testid="stFileUploader"] button {
+    background: #21262d !important;
+    color: #e6edf3 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 6px !important;
+}
 
 [data-testid="stButton"] button {
     background: #238636 !important;
@@ -507,11 +530,9 @@ with tab1:
 
                         if "eval" in res:
                             eval_data = res["eval"]
-                            col1, col2, col3 = st.columns(3)
+                            col1, col2 = st.columns(2)
                             col1.metric("Confidence", round(eval_data.get("confidence", 0), 3))
-                            col2.metric("Faithfulness", round(eval_data.get("faithfulness", 0), 3))
-                            col3.metric("Latency (sec)", eval_data.get("latency", 0))
-                            st.write(f"Quality: {eval_data.get('quality')}")
+                            col2.metric("Latency (sec)", eval_data.get("latency", 0))
                             st.progress(float(eval_data.get("confidence", 0)))
 
                         if "sources" in res and res["sources"]:
@@ -520,7 +541,7 @@ with tab1:
                                 src = s.get("source", "unknown")
                                 page = s.get("page", "?")
                                 preview = s.get("preview", "")
-                                with st.expander(f"📄 {src} — page {page}"):
+                                with st.expander(f"{src} — page {page}"):
                                     st.write(preview)
 
             except Exception as e:
@@ -570,9 +591,14 @@ with tab2:
                     else:
                         if "eval" in res:
                             st.write(f"Latency: {res['eval'].get('latency', 0)} sec")
-                        st.write("### Results")
-                        for r in res.get("results", []):
-                            st.image(r["source"], caption=f"Score: {round(r['score'], 3)}")
+                        results = res.get("results", [])
+                        if not results:
+                            st.warning("No similar images found.")
+                        else:
+                            st.write("### Results")
+                            for r in results:
+                                st.image(r["source"])
+                                st.caption(r.get("description", ""))
 
         except Exception as e:
             st.error(f"Request failed: {str(e)}")
@@ -609,11 +635,7 @@ with tab3:
 
                         if "eval" in res:
                             eval_data = res["eval"]
-                            col1, col2, col3 = st.columns(3)
-                            col1.metric("Confidence", round(eval_data.get("confidence", 0), 3))
-                            col2.metric("Faithfulness", round(eval_data.get("faithfulness", 0), 3))
-                            col3.metric("Latency (sec)", eval_data.get("latency", 0))
-                            st.write(f"Quality: {eval_data.get('quality')}")
+                            st.metric("Latency (sec)", eval_data.get("latency", 0))
 
             except Exception as e:
                 st.error(f"Request failed: {str(e)}")

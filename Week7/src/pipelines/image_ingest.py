@@ -12,7 +12,7 @@ from PIL import Image
 from src.embeddings.clip_embedder import CLIPConfig, CLIPEembedder
 
 
-IMAGES_DIR = Path("src/data/images")  # ✅ your folder
+IMAGES_DIR = Path("src/data/images")  #  your folder
 MM_DIR = Path("src/multimodal_vectorstore")
 MM_DIR.mkdir(parents=True, exist_ok=True)
 

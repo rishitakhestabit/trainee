@@ -34,7 +34,7 @@ for p in [RAW_DIR, CHUNKS_DIR, VECTORSTORE_DIR]:
 @dataclass
 class IngestConfig:
     tags: List[str]
-    chunk_min_tokens: int = 30        # lowered from 200 — avoids filtering all chunks
+    chunk_min_tokens: int = 10        # lowered from 200 — avoids filtering all chunks
     chunk_max_tokens: int = 500
     chunk_overlap_tokens: int = 50
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -87,8 +87,7 @@ def enrich_metadata(
     file_path: str
 ) -> List[Document]:
     out = []
-    # Always store ONLY bare filename — never full/relative path.
-    # e.g. "Week-7-1766484412108.pdf" not "src/data/raw/Week-7-...pdf"
+
     filename = Path(file_path).name
 
     for d in docs:
@@ -134,17 +133,10 @@ def chunk_documents(docs: List[Document], cfg: IngestConfig) -> List[Document]:
 
 
 # ================= CLEAN OLD JSONL ENTRIES =================
+#To remove old/incorrect chunk entries from chunks.jsonl that contain file paths instead of clean filenames
 def _clean_chunks_jsonl() -> None:
     """
-    ✅ FIX for old PDFs appearing in answers:
-    Previous ingests saved source as full paths like:
-        "data/Week-2-....pdf"
-        "src/data/raw/astrazeneca_2022.pdf"
-    These pollute BM25 retrieval so old irrelevant PDFs keep appearing.
-
-    This rewrites chunks.jsonl keeping ONLY entries with bare filenames
-    (no slashes). Called automatically at the start of every run_ingestion().
-    Safe to call repeatedly — skips if nothing dirty found.
+     FIX for old PDFs appearing in answers:
     """
     if not CHUNKS_JSONL.exists():
         return

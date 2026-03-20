@@ -22,7 +22,6 @@ class Reranker:
     - CrossEncoder primary
     - Embedding fallback
     - Handles mixed inputs safely
-    - Fully try-catch protected
     """
 
     def __init__(self, cfg: Optional[RerankerConfig] = None):

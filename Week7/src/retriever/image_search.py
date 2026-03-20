@@ -50,12 +50,16 @@ def _search(index, qvec: np.ndarray, top_k: int) -> Tuple[np.ndarray, np.ndarray
     return scores[0], idxs[0]
 
 
+SIMILARITY_THRESHOLD = 0.25 
+
 def _make_hits(meta: List[Dict[str, Any]], scores: np.ndarray, idxs: np.ndarray, top_k: int) -> List[Dict[str, Any]]:
     hits: List[Dict[str, Any]] = []
     for rank, (s, i) in enumerate(zip(scores, idxs), start=1):
         if len(hits) >= top_k:
             break
         if int(i) < 0:
+            continue
+        if float(s) < SIMILARITY_THRESHOLD:  # skip low similarity
             continue
         row = meta[int(i)]
         hits.append(
@@ -90,7 +94,7 @@ def _print_results(hits: List[Dict[str, Any]], mode: str) -> None:
                 print(f"    ocr    : {h['ocr_text_preview']}")
             print("")
     else:
-        print("\n===== IMAGE → TEXT ANSWER (Context) =====\n")
+        print("\n===== IMAGE - TEXT ANSWER (Context) =====\n")
         for h in hits:
             print(f"[{h['rank']}] score={h['score']:.4f}")
             print(f"    source: {h['source']}")

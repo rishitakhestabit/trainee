@@ -1,8 +1,11 @@
 import time
+from dotenv import load_dotenv
+load_dotenv()
 import json
 from pathlib import Path
 from typing import Any, Dict, Optional
-
+import requests as http_requests  
+import os                          
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
@@ -96,6 +99,37 @@ def _answer_from_context(query: str, context: str) -> str:
     return f"Based on context:\n\n{context[:900]}"
 
 
+# ADD THIS FUNCTION BELOW IT
+def generate_answer(query: str, context: str) -> str:
+    if not context.strip():
+        return "No relevant information found."
+    
+    prompt = f"""You are a helpful assistant. Answer the question using ONLY the context below.
+"
+
+Context:
+{context}
+
+Question: {query}
+
+Answer:"""
+
+    try:
+        res = http_requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.0
+            }
+        )
+        return res.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return f"Generation failed: {str(e)}"
 # ================= SOURCE FILTER =================
 def extract_source_from_query(query: str, candidates) -> Optional[str]:
     """
@@ -173,13 +207,13 @@ def ask(req: AskRequest):
             context = result if isinstance(result, str) else ""
             sources = []
 
-        answer = _answer_from_context(req.query, context)
+        answer = generate_answer(req.query, context)
 
         # -------- EVALUATION --------
         scores = evaluator.score(req.query, answer, context)
 
         # -------- SELF REFLECTION --------
-        if scores["faithfulness"] < 0.4:
+        if scores.get("confidence", 1.0) < 0.4:
             answer = "Low confidence answer. Please verify."
             scores = evaluator.score(req.query, answer, context)
 
@@ -224,13 +258,36 @@ def ask_image(req: AskImageRequest):
         scores_arr, idxs_arr = _img_search(img_index, vec, req.top_k)
         hits = _img_make_hits(img_meta, scores_arr, idxs_arr, req.top_k)
 
-        eval_scores = evaluator.score(
-            req.query or "image", "image results", json.dumps(hits)
-        )
+        # Generate short description for each image
+        for hit in hits:
+            caption = hit.get("caption", "")
+            ocr = hit.get("ocr_text_preview", "")
+            context_text = f"Caption: {caption}\nOCR Text: {ocr}".strip()
+
+            if context_text:
+                try:
+                    res = http_requests.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "model": os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+                            "messages": [{"role": "user", "content": f"Give a single short 1-2 sentence description of this image based on the following info:\n{context_text}"}],
+                            "temperature": 0.0,
+                            "max_tokens": 100
+                        }
+                    )
+                    hit["description"] = res.json()["choices"][0]["message"]["content"].strip()
+                except Exception:
+                    hit["description"] = caption or "No description available."
+            else:
+                hit["description"] = "No description available."
 
         return {
             "results": hits[:3],
-            "eval": {**eval_scores, "latency": round(time.time() - start, 3)}
+            "eval": {"latency": round(time.time() - start, 3)}
         }
 
     except Exception as e:

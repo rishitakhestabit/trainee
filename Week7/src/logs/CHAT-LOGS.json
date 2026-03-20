@@ -230,50 +230,40 @@
   ],
   "demo": [
     {
-      "time": "2026-03-19T01:43:14.241672",
-      "role": "evaluation",
-      "text": "scores",
-      "meta": {
-        "context_match": 0.7675259113311768,
-        "faithfulness": 0.9919878244400024,
-        "answer_relevancy": 0.7448347806930542,
-        "hallucination": 0.008012175559997559,
-        "confidence": 0.8505033373832702,
-        "quality": "HIGH",
-        "eval_latency": 0.245
-      }
-    },
-    {
-      "time": "2026-03-19T01:43:33.585104",
-      "role": "user",
-      "text": "what is the objective in week 9?",
-      "meta": {}
-    },
-    {
-      "time": "2026-03-19T01:43:38.702721",
+      "time": "2026-03-20T12:39:47.972689",
       "role": "assistant",
-      "text": "Based on context:\n\n[1] source=Week-9--2--1773039881581.pdf | page=0 | year=None | type=None | tags=['uploaded', 'rag']\nWEEK 9 \u2014 AGENTIC AI & MULTI-AGENT SYSTEM DESIGN (AutoGen + Open Models + Orchestration + Memory + Planning + Tool Use) WEEK OBJECTIVES Interns will learn: Agentic system architecture Single-agent \u2192 multi-agent systems Role-based intelligence modelling Planner\u2013Executor\u2013Validator patterns Tool-using agents (code, search, DB, files) Multi-agent communication protocols Memory (short + long term) Swarm...\n\n---\n[2] source=Week-2-Launchpad-1768200491926.pdf | page=0 | year=None | type=None | tags=['uploaded', 'rag']\nWeek 2 \u2014 Frontend Fundamentals (HTML + CSS + JavaScript) \ud83c\udfaf Objective: Enable you to build responsive UI layouts and manipulate DOM with JavaScript using ES6 concepts. Week-2 Topics HTML \u25cf Semantic HTML5 structure \u25cf <header> <footer> <nav> <main> <section> <article> \u25cf Forms, validation",
+      "text": "The work policy at AstraZeneca includes being a great place to work, respecting all employees, valuing openness, celebrating diversity, and ensuring every voice is heard. The company also aims to uphold its values, deliver strategic priorities, and sustain and improve short- and long-term performance. Additionally, the company is committed to hiring and promoting talent ethically and in compliance with applicable laws, and has implemented measures such as pay equity training to ensure equitable reward and compensation.",
       "meta": {}
     },
     {
-      "time": "2026-03-19T01:43:38.704136",
+      "time": "2026-03-20T12:39:47.974361",
       "role": "evaluation",
       "text": "scores",
       "meta": {
-        "context_match": 0.3074103891849518,
-        "faithfulness": 0.9924894571304321,
-        "answer_relevancy": 0.2936851978302002,
-        "hallucination": 0.007510542869567871,
-        "confidence": 0.5773244589567185,
-        "quality": "MEDIUM",
-        "eval_latency": 0.221
+        "confidence": 0.5,
+        "latency": 0.086
       }
     },
     {
-      "time": "2026-03-19T01:47:58.394478",
+      "time": "2026-03-20T12:47:54.155102",
       "role": "user",
-      "text": "users from australia",
+      "text": "what is the work policy?",
       "meta": {}
+    },
+    {
+      "time": "2026-03-20T12:47:57.763235",
+      "role": "assistant",
+      "text": "The work policy at AstraZeneca includes being a great place to work, respecting all employees, valuing openness, celebrating diversity, and ensuring every voice is heard. The company also aims to uphold its values, deliver strategic priorities, and sustain and improve short- and long-term goals through its global workforce. Additionally, the company is committed to hiring and promoting talent ethically and in compliance with applicable laws, and has implemented measures such as pay equity training to ensure equitable reward and compensation.",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-20T12:47:57.764966",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "confidence": 0.8,
+        "latency": 0.309
+      }
     }
   ]
 }

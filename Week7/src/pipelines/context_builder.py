@@ -157,7 +157,7 @@ def build_context(
     except Exception as e:
         print("Context build error:", e)
 
-    # 🔥 ALWAYS SAFE RETURN
+    #  ALWAYS SAFE RETURN
     context_text = "\n---\n".join(context_parts).strip()
 
     return context_text, sources

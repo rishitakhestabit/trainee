@@ -1,0 +1,81 @@
+Order ID,Product,Quantity Ordered,Price,Order Date,Time,Purchase Address,City,Product Type
+10001,Laptop,2,750,2024-01-01,09:15,101 Elm St,New York,Electronics
+10002,Phone,3,500,2024-01-01,10:20,102 Oak St,Los Angeles,Electronics
+10003,Tablet,1,300,2024-01-01,11:45,103 Pine St,Chicago,Electronics
+10004,Headphones,5,80,2024-01-02,12:30,104 Cedar St,Houston,Electronics
+10005,Chair,4,120,2024-01-02,13:10,105 Maple St,Phoenix,Furniture
+10006,Desk,1,350,2024-01-02,14:25,106 Birch St,Philadelphia,Furniture
+10007,Monitor,2,200,2024-01-03,15:50,107 Walnut St,San Antonio,Electronics
+10008,Keyboard,6,40,2024-01-03,16:05,108 Chestnut St,San Diego,Electronics
+10009,Mouse,8,25,2024-01-03,17:45,109 Spruce St,Dallas,Electronics
+10010,Sofa,1,900,2024-01-04,09:05,110 Willow St,San Jose,Furniture
+10011,Laptop,1,780,2024-01-04,10:35,111 Aspen St,Austin,Electronics
+10012,Phone,2,520,2024-01-04,11:55,112 Poplar St,Jacksonville,Electronics
+10013,Table,3,250,2024-01-05,12:15,113 Redwood St,Fort Worth,Furniture
+10014,Bookshelf,2,180,2024-01-05,13:40,114 Magnolia St,Columbus,Furniture
+10015,Tablet,4,310,2024-01-05,14:20,115 Cypress St,Charlotte,Electronics
+10016,Headphones,7,85,2024-01-06,15:10,116 Dogwood St,San Francisco,Electronics
+10017,Monitor,3,220,2024-01-06,16:30,117 Palm St,Indianapolis,Electronics
+10018,Chair,6,130,2024-01-06,17:00,118 Olive St,Seattle,Furniture
+10019,Desk,2,360,2024-01-07,09:15,119 Vine St,Denver,Furniture
+10020,Mouse,10,30,2024-01-07,10:25,120 Peach St,Washington,Electronics
+10021,Laptop,3,800,2024-01-07,11:45,121 Cherry St,Boston,Electronics
+10022,Phone,5,540,2024-01-08,12:30,122 Maple Ave,El Paso,Electronics
+10023,Sofa,2,950,2024-01-08,13:05,123 Oak Ave,Detroit,Furniture
+10024,Table,1,270,2024-01-08,14:45,124 Pine Ave,Nashville,Furniture
+10025,Keyboard,4,45,2024-01-09,15:10,125 Cedar Ave,Portland,Electronics
+10026,Monitor,2,210,2024-01-09,16:25,126 Birch Ave,Memphis,Electronics
+10027,Tablet,3,320,2024-01-09,17:15,127 Walnut Ave,Las Vegas,Electronics
+10028,Bookshelf,1,190,2024-01-10,09:35,128 Chestnut Ave,Louisville,Furniture
+10029,Headphones,9,90,2024-01-10,10:50,129 Spruce Ave,Baltimore,Electronics
+10030,Chair,2,125,2024-01-10,11:40,130 Willow Ave,Milwaukee,Furniture
+10031,Laptop,2,760,2024-01-11,12:10,131 Elm Rd,Albuquerque,Electronics
+10032,Phone,4,510,2024-01-11,13:30,132 Oak Rd,Tucson,Electronics
+10033,Tablet,5,330,2024-01-11,14:55,133 Pine Rd,Fresno,Electronics
+10034,Sofa,1,880,2024-01-12,15:20,134 Cedar Rd,Sacramento,Furniture
+10035,Desk,3,370,2024-01-12,16:45,135 Maple Rd,Kansas City,Furniture
+10036,Mouse,12,28,2024-01-12,17:30,136 Birch Rd,Atlanta,Electronics
+10037,Monitor,4,215,2024-01-13,09:15,137 Walnut Rd,Omaha,Electronics
+10038,Keyboard,7,42,2024-01-13,10:25,138 Chestnut Rd,Raleigh,Electronics
+10039,Headphones,6,88,2024-01-13,11:35,139 Spruce Rd,Miami,Electronics
+10040,Table,2,260,2024-01-14,12:50,140 Willow Rd,Oakland,Furniture
+10041,Laptop,1,820,2024-01-14,13:15,141 Elm Blvd,Minneapolis,Electronics
+10042,Phone,6,560,2024-01-14,14:45,142 Oak Blvd,Tulsa,Electronics
+10043,Tablet,2,340,2024-01-15,15:05,143 Pine Blvd,Wichita,Electronics
+10044,Chair,5,135,2024-01-15,16:25,144 Cedar Blvd,New Orleans,Furniture
+10045,Sofa,2,920,2024-01-15,17:40,145 Maple Blvd,Cleveland,Furniture
+10046,Desk,1,390,2024-01-16,09:20,146 Birch Blvd,Tampa,Furniture
+10047,Monitor,3,225,2024-01-16,10:35,147 Walnut Blvd,Bakersfield,Electronics
+10048,Keyboard,8,44,2024-01-16,11:50,148 Chestnut Blvd,Aurora,Electronics
+10049,Mouse,15,27,2024-01-17,12:10,149 Spruce Blvd,Honolulu,Electronics
+10050,Bookshelf,2,200,2024-01-17,13:30,150 Willow Blvd,Anaheim,Furniture
+10051,Laptop,2,790,2024-01-17,14:45,151 Elm Dr,Santa Ana,Electronics
+10052,Phone,3,530,2024-01-18,15:10,152 Oak Dr,Riverside,Electronics
+10053,Tablet,4,345,2024-01-18,16:25,153 Pine Dr,Corpus Christi,Electronics
+10054,Headphones,10,95,2024-01-18,17:40,154 Cedar Dr,Lexington,Electronics
+10055,Chair,3,140,2024-01-19,09:05,155 Maple Dr,Henderson,Furniture
+10056,Desk,2,410,2024-01-19,10:20,156 Birch Dr,Stockton,Furniture
+10057,Monitor,1,240,2024-01-19,11:35,157 Walnut Dr,St. Paul,Electronics
+10058,Keyboard,5,48,2024-01-20,12:50,158 Chestnut Dr,Cincinnati,Electronics
+10059,Mouse,9,29,2024-01-20,13:15,159 Spruce Dr,Pittsburgh,Electronics
+10060,Sofa,1,970,2024-01-20,14:45,160 Willow Dr,Greensboro,Furniture
+10061,Laptop,4,810,2024-01-21,15:05,161 Elm Ln,Anchorage,Electronics
+10062,Phone,2,550,2024-01-21,16:20,162 Oak Ln,Plano,Electronics
+10063,Tablet,3,360,2024-01-21,17:35,163 Pine Ln,Lincoln,Electronics
+10064,Bookshelf,1,210,2024-01-22,09:10,164 Cedar Ln,Orlando,Furniture
+10065,Chair,6,150,2024-01-22,10:30,165 Maple Ln,Irvine,Furniture
+10066,Desk,2,420,2024-01-22,11:45,166 Birch Ln,Newark,Furniture
+10067,Monitor,5,230,2024-01-23,12:10,167 Walnut Ln,Toledo,Electronics
+10068,Keyboard,9,50,2024-01-23,13:25,168 Chestnut Ln,Durham,Electronics
+10069,Mouse,11,26,2024-01-23,14:40,169 Spruce Ln,Chula Vista,Electronics
+10070,Sofa,2,990,2024-01-24,15:05,170 Willow Ln,Fort Wayne,Furniture
+10071,Laptop,1,830,2024-01-24,16:20,171 Elm Ct,Jersey City,Electronics
+10072,Phone,7,570,2024-01-24,17:35,172 Oak Ct,St. Petersburg,Electronics
+10073,Tablet,2,370,2024-01-25,09:15,173 Pine Ct,Laredo,Electronics
+10074,Headphones,12,100,2024-01-25,10:30,174 Cedar Ct,Madison,Electronics
+10075,Chair,4,155,2024-01-25,11:45,175 Maple Ct,Chandler,Furniture
+10076,Desk,3,430,2024-01-26,12:10,176 Birch Ct,Lubbock,Furniture
+10077,Monitor,2,245,2024-01-26,13:25,177 Walnut Ct,Scottsdale,Electronics
+10078,Keyboard,6,52,2024-01-26,14:40,178 Chestnut Ct,Reno,Electronics
+10079,Mouse,14,31,2024-01-27,15:05,179 Spruce Ct,Glendale,Electronics
+10080,Sofa,1,1000,2024-01-27,16:20,180 Willow Ct,Boise,Furniture

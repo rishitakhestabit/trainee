@@ -11,6 +11,9 @@ The goal of this implementation is to demonstrate role-based intelligence, messa
 
 ---
 
+![Query](../../ss/day1/querytest1.png)
+![Result](../../ss/day1/finalans1.png)
+
 ## Concepts Implemented
 
 Based on Week 9 requirements:
@@ -54,9 +57,6 @@ Behavior:
 - Produces structured research output
 - Ends with: RESEARCH COMPLETE. PASSING TO SUMMARIZER.
 
-Screenshot:
-![Research Agent](ss/day1/research_agent.png)
-
 ---
 
 ## Summarizer Agent
@@ -76,8 +76,6 @@ Behavior:
 - Outputs 1–2 paragraph summary
 - Ends with: SUMMARY COMPLETE. PASSING TO ANSWER AGENT.
 
-Screenshot:
-![Summarizer Agent](ss/day1/summarizer_agent.png)
 
 ---
 
@@ -97,8 +95,6 @@ Restrictions:
 Behavior:
 - Produces final polished answer
 
-Screenshot:
-![Answer Agent](ss/day1/answer_agent.png)
 
 ---
 
@@ -131,3 +127,6 @@ Logging:
 ## Conclusion
 
 The system successfully demonstrates a basic multi-agent architecture using message passing and role isolation. Each agent performs a single responsibility, making the system modular, scalable, and easy to debug. This forms the foundation for more complex multi-agent orchestration in later stages.
+
+![Query](../../ss/day1/querytest2.png)
+![Result](../../ss/day1/finalans2.png)

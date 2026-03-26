@@ -11,8 +11,8 @@ The goal of this implementation is to demonstrate role-based intelligence, messa
 
 ---
 
-![Query](../../ss/day1/querytest1.png)
-![Result](../../ss/day1/finalans1.png)
+![Query](../ss/day1/querytest1.png)
+![Result](../ss/day1/finalans1.png)
 
 ## Concepts Implemented
 
@@ -128,5 +128,5 @@ Logging:
 
 The system successfully demonstrates a basic multi-agent architecture using message passing and role isolation. Each agent performs a single responsibility, making the system modular, scalable, and easy to debug. This forms the foundation for more complex multi-agent orchestration in later stages.
 
-![Query](../../ss/day1/querytest2.png)
-![Result](../../ss/day1/finalans2.png)
+![Query](../ss/day1/querytest2.png)
+![Result](../ss/day1/finalans2.png)

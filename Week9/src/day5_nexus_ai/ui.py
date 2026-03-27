@@ -916,7 +916,7 @@ if user_input:
     md_files = list(out_path.glob("*.md")) if out_path.exists() else []
     if md_files:
         names = ", ".join(f.name for f in md_files)
-        response_text += f"\n\n📄 Files saved to Output/: {names}"
+        response_text += f"\n\n Files saved to Output/: {names}"
 
     # ── Store and render ──────────────────────────────────────────────────────
     st.session_state.messages.append({

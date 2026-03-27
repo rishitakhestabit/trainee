@@ -12,6 +12,35 @@ from memory.memory_manager import MemoryManager
 
 load_dotenv()
 
+# -------------------- LLM CLIENT --------------------
+class LLMClient:
+    def __init__(self):
+        api_key = os.getenv("GROQ_API_KEY")
+        base_url = os.getenv("GROQ_BASE_URL")
+        model = os.getenv("GROQ_MODEL")
+
+        if not api_key:
+            raise RuntimeError("Missing GROQ_API_KEY.")
+        if not base_url:
+            raise RuntimeError("Missing GROQ_BASE_URL.")
+        if not model:
+            raise RuntimeError("Missing GROQ_MODEL.")
+
+        self.client = OpenAIChatCompletionClient(
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+            model_info={
+                "family": "openai",
+                "context_length": 8192,
+                "function_calling": True,
+                "vision": False,
+                "json_output": False,
+                "structured_output": True,  # keep True for Day 4
+            },
+        )
+
+
 # -------------------- LOGGING SETUP --------------------
 LOG_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../logs/day4")
@@ -40,19 +69,8 @@ TIME_TAKEN: {duration:.2f} seconds
 memory = MemoryManager()
 
 # -------------------- MODEL --------------------
-model_client = OpenAIChatCompletionClient(
-    model="openai/gpt-oss-20b",
-    base_url="https://api.groq.com/openai/v1",
-    api_key=os.getenv("GROQ_API_KEY"),
-    model_info={
-        "family": "openai",
-        "context_length": 8192,
-        "function_calling": True,
-        "vision": False,
-        "json_output": False,
-        "structured_output": True
-    }
-)
+llm = LLMClient()
+model_client = llm.client
 
 # -------------------- AGENT --------------------
 agent = AssistantAgent(
@@ -83,7 +101,7 @@ async def ask_agent():
             print("Have a good day !!")
             break
 
-        start_time = time.time()  #  start timer
+        start_time = time.time()
 
         context = memory.retrieve_context(user_input)
 
@@ -104,14 +122,13 @@ USER QUESTION:
 
         answer = response.messages[-1].content
 
-        print(f"\nAGENT: {answer}")  #  clean terminal output
+        print(f"\nAGENT: {answer}")
 
         memory.store_interaction(user_input, answer)
 
-        end_time = time.time()  # ⏱ end timer
+        end_time = time.time()
         duration = end_time - start_time
 
-        # Save logs (with timestamp, hidden from terminal)
         write_log(user_input, answer, duration)
 
 

@@ -139,16 +139,6 @@ class Orchestrator:
             if name == "file" and "code" in results:
 
                 code_result = results["code"]
-
-                # Extract the generated CSV content from code agent output
-                # if isinstance(code_result, dict):
-                #     csv_content = (
-                #         code_result.get("execution_result", "")
-                #         or code_result.get("generated_code", "")
-                #     ).strip()
-                # else:
-                #     csv_content = str(code_result).strip()
-
                 if isinstance(code_result, dict):
                     csv_content = code_result.get("execution_result", "").strip()
 

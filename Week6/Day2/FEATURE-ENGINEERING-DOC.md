@@ -5,6 +5,7 @@
 **Day 2 — Feature Engineering Pipeline**
 
 ---
+![FEature Imp](src/logs/feature_importance.png)
 
 ## Objective
 

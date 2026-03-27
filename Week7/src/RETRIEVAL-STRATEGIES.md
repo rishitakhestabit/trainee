@@ -128,8 +128,8 @@ Responsible for:
 ## Screenshots (Day-2 results)
 
 ### Run output (example 1)
-![Day-2 output 1](src/ss/day2ss/queryres.png)
+![Day-2 output 1](ss/day2ss/queryres.png)
 
 ### Run output (example 2)
-![Day-2 output 2](src/ss/day2ss/queryres2.png)
+![Day-2 output 2](ss/day2ss/queryres2.png)
 

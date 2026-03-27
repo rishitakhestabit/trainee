@@ -26,10 +26,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
 logger = logging.getLogger(__name__)
-
-
 # ── Pipeline ──────────────────────────────────────────────────
 async def run_pipeline(query: str) -> str:
     logger.info("=" * 60)

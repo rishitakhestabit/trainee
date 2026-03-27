@@ -3,7 +3,9 @@
 ## Week 7 — Production RAG System Deployment
 
 This document describes the deployment and execution of the complete Production RAG system including Text RAG, Image RAG, and SQL QA.
+
 ![UI](src/ss/day5ss/streamlitui.png)
+
 ---
 
 # System Overview
@@ -19,8 +21,6 @@ The system integrates:
 
 Core API implemented in:
 - src/deployment/app.py
-
-Reference: turn4file0
 
 ---
 

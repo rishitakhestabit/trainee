@@ -3,7 +3,7 @@
 ## Week 7 — Production RAG System Deployment
 
 This document describes the deployment and execution of the complete Production RAG system including Text RAG, Image RAG, and SQL QA.
-![UI](ss/day5ss/streamlitui.png)
+![UI](src/ss/day5ss/streamlitui.png)
 ---
 
 # System Overview

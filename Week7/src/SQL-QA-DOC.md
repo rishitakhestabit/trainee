@@ -2,7 +2,7 @@
 
 This document explains what I built for **Day 4 — SQL Question Answering System (Text -> SQL -> Answer)**.
 ---
-![Final result](src/ss/day4ss/output.png)
+![Final result](ss/day4ss/output.png)
 
 
 We type a natural language question -> the system generates **SQL using an LLM** , validates it , runs it on **SQLite** , shows a clean summary of the result.

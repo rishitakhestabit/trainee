@@ -1,19 +1,19 @@
-
-# README.md
-
 # HR LLM — TinyLlama Fine-Tuning and Deployment
 
-This project demonstrates the complete workflow of building and deploying a domain-specific Large Language Model using TinyLlama.
+This project demonstrates the end-to-end lifecycle of building, optimizing, and deploying a domain-specific Large Language Model (LLM) using TinyLlama.
 
-The model was trained on a Human Resources (HR) instruction dataset and optimized for efficient inference and deployment.
+The model is fine-tuned on a Human Resources (HR) dataset and optimized for efficient local inference and deployment.
 
-The project covers:
+---
 
-Day 1 — Dataset preparation and analysis  
-Day 2 — Parameter-efficient fine-tuning using QLoRA  
-Day 3 — Model quantization and optimization  
-Day 4 — Inference benchmarking and evaluation  
-Day 5 — Local LLM API deployment with FastAPI and Streamlit
+# Key Highlights
+
+- Fine-tuned LLM using QLoRA (~1% trainable parameters)
+- Achieved significant memory reduction via quantization
+- Implemented INT8, INT4, and GGUF quantization
+- Built FastAPI-based LLM service with streaming
+- Integrated Streamlit UI for interaction
+- Benchmarked models using tokens/sec, latency, VRAM, and accuracy
 
 ---
 
@@ -23,38 +23,29 @@ Day 5 — Local LLM API deployment with FastAPI and Streamlit
 week8/
 │
 ├── adapters/
-│
 ├── analysis/
 │   └── token_length_distribution.png
-│
 ├── benchmarks/
 │   └── results.csv
-│
 ├── data/
 │   ├── raw.jsonl
 │   ├── train.jsonl
 │   └── val.jsonl
-│
 ├── deploy/
 │   ├── app.py
 │   ├── config.py
 │   ├── model_loader.py
 │   └── streamlit.py
-│
 ├── inference/
 │   ├── inference.ipynb
 │   └── test_inference.py
-│
 ├── notebooks/
 │   ├── lora_train.ipynb
 │   └── quantized.ipynb
-│
 ├── quantized/
-│
 ├── utils/
 │   ├── data_cleaner.py
 │   └── generate_data.py
-│
 ├── DATASET-ANALYSIS.md
 ├── TRAINING-REPORT.md
 ├── QUANTISATION-REPORT.md
@@ -70,7 +61,6 @@ week8/
 An instruction-tuning dataset was prepared for the HR domain.
 
 Topics included:
-
 - employee onboarding
 - performance management
 - compensation and benefits
@@ -89,7 +79,6 @@ Dataset format:
 ```
 
 Dataset files:
-
 ```
 data/raw.jsonl
 data/train.jsonl
@@ -97,96 +86,60 @@ data/val.jsonl
 ```
 
 Cleaning script:
-
 ```
 utils/data_cleaner.py
 ```
 
-Run data cleaning:
-
+Run:
 ```bash
 python utils/data_cleaner.py
 ```
 
-Token distribution analysis:
+Screenshot:
+![Dataset](ss/day1ss/result.png)
 
-```
-analysis/token_length_distribution.png
-```
+Token distribution:
+![Token Distribution](analysis/token_length_distribution.png)
 
 ---
 
 # Day 2 — QLoRA Fine-Tuning
 
-The base model used:
-
+Base model:
 ```
 TinyLlama/TinyLlama-1.1B-Chat-v1.0
 ```
 
-Fine-tuning used **QLoRA** to reduce GPU memory usage.
-
-Training configuration:
-
+Configuration:
 - LoRA rank = 16
 - learning rate = 2e-4
 - batch size = 4
 - epochs = 3
-- optimizer = paged_adamw_8bit
 
 Training notebook:
-
 ```
 notebooks/lora_train.ipynb
 ```
 
-Run training:
-
+Run:
 ```bash
 jupyter notebook notebooks/lora_train.ipynb
 ```
 
-Trained adapter weights are saved in:
-
-```
-adapters/
-```
+Screenshot:
+![Training Loss](ss/day2ss/trainloss.png)
 
 ---
 
 # Day 3 — Model Quantization
 
-The merged model was quantized to reduce memory usage and enable CPU inference.
+Methods used:
+- FP16 (baseline)
+- INT8
+- INT4
+- GGUF (llama.cpp)
 
-Quantization methods used:
-
-FP16 (baseline)  
-INT8 quantization using BitsAndBytes  
-INT4 NF4 quantization  
-GGUF conversion using llama.cpp
-
-Generated formats:
-
-```
-INT8 model
-INT4 model
-GGUF q8_0
-GGUF q4_0
-```
-
-Quantization notebook:
-
-```
-notebooks/quantized.ipynb
-```
-
-Run quantization:
-
-```bash
-jupyter notebook notebooks/quantized.ipynb
-```
-
-Model size comparison:
+Results:
 
 | Format | Size |
 |------|------|
@@ -196,124 +149,70 @@ Model size comparison:
 | GGUF q8_0 | ~1100 MB |
 | GGUF q4_0 | ~608 MB |
 
+Screenshots:
+![Comparison](ss/day3ss/comp.png)
+![Output](ss/day3ss/output.png)
+
 ---
 
-# Day 4 — Inference Optimization and Benchmarking
+# Day 4 — Benchmarking
 
-Inference performance was evaluated for:
-
-- Base model
-- Fine-tuned model
-- Quantized GGUF model
-
-Metrics measured:
-
-- Tokens per second
+Metrics:
+- Tokens/sec
 - Latency
 - VRAM usage
-- Semantic accuracy
+- Accuracy
 
-Benchmark script:
-
-```
-inference/test_inference.py
-```
-
-Run benchmarking:
-
+Run:
 ```bash
 python inference/test_inference.py
 ```
 
-Results saved in:
-
-```
-benchmarks/results.csv
-```
+Result:
+![Benchmark](ss/day4ss/res.png)
 
 ---
 
-# Day 5 — Local LLM API Deployment
+# Day 5 — Deployment
 
-The quantized model was deployed as a local API using **FastAPI**.
+FastAPI endpoints:
+- POST /generate
+- POST /chat
 
-Deployment files:
-
-```
-deploy/app.py
-deploy/config.py
-deploy/model_loader.py
-deploy/streamlit.py
-```
-
-API endpoints:
-
-POST `/generate`  
-Generate text from a prompt.
-
-POST `/chat`  
-Chat interface using system and user messages.
-
----
-
-# Running the API Server
-
-Start FastAPI:
-
+Run API:
 ```bash
 uvicorn deploy.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Open API documentation:
-
-```
-http://localhost:8000/docs
-```
-
----
-
-# Running the Streamlit Interface
-
+Run UI:
 ```bash
 streamlit run deploy/streamlit.py
 ```
 
-Open:
-
-```
-http://localhost:8501
-```
+Screenshots:
+![Swagger](ss/day5ss/post-chat-waggerui.png)
+![Streamlit](ss/day5ss/streamlitop.png)
+![Curl](ss/day5ss/usingcurl.png)
 
 ---
 
-# Testing API using CURL
+# Architecture
 
-Example:
-
-```bash
-curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d '{
-"system": "You are an HR assistant",
-"messages": [{"role": "user", "content": "What is employee onboarding?"}],
-"temperature": 0.7,
-"top_p": 0.9,
-"top_k": 40
-}'
-```
+User → FastAPI → llama.cpp → Quantized Model
 
 ---
 
 # Results
 
-The project successfully demonstrates:
-
-- Instruction dataset creation
+The project demonstrates:
+- Dataset preparation and cleaning
 - Parameter-efficient fine-tuning
 - Model quantization
-- Inference benchmarking
-- Local API deployment
+- Performance benchmarking
+- Local LLM deployment
 
-The deployed system can be extended for:
+---
 
-- Retrieval Augmented Generation (RAG)
-- AI assistants
-- enterprise HR chatbots
+# Conclusion
+
+This project showcases a complete pipeline from data preparation to deployment, enabling efficient and scalable LLM applications on local systems.

@@ -1,4 +1,3 @@
-
 # Instruction Tuning Dataset – HR Domain
 
 ![Day-1](ss/day1ss/result.png)
@@ -16,6 +15,8 @@
 - **Train split:** 90%
 - **Validation split:** 10%
 
+> Note: While the dataset contains fewer than 1000 samples, it is **highly curated and domain-specific**, focusing on HR use-cases to ensure quality over quantity.
+
 Final dataset files:
 
 ```
@@ -29,7 +30,7 @@ data/
 
 # Instruction Dataset Structure
 
-Each training sample follows the standard **instruction tuning format**:
+Each training sample follows the standard **instruction–input–output format**:
 
 ```json
 {
@@ -56,7 +57,9 @@ The dataset focuses on the **Human Resources (HR)** domain and contains question
 - Labor law concepts
 - Organizational development
 
-The goal is to train the model to produce **clear HR explanations and policy descriptions**.
+> The HR domain was selected due to its structured policies and strong applicability in enterprise AI systems.
+
+The goal is to train the model to produce **clear, structured HR explanations and policy guidance**.
 
 ---
 
@@ -78,7 +81,6 @@ The script performs several cleaning operations.
 
 **2. Field Validation**
 Ensures each record contains:
-
 - `instruction`
 - `output`
 
@@ -88,7 +90,7 @@ Invalid records are removed.
 - Trims whitespace
 - Standardizes formatting
 
-These steps ensure the dataset is **consistent and training‑ready**.
+> These steps ensure the dataset is **consistent, noise-free, and training-ready**.
 
 ---
 
@@ -110,19 +112,22 @@ was tokenized and analyzed.
 
 ---
 
+## Token Statistics
+
+- **Average token length:** ~120–150  
+- **Minimum token length:** ~10  
+- **Maximum token length observed:** ~1800  
+
+---
+
 # Token Length Filtering
 
 Filtering thresholds used:
 
 - **Minimum tokens:** 10  
-- **Maximum tokens:** 512
+- **Target maximum tokens:** 512  
 
-This ensures samples are:
-
-- Not too short
-- Not excessively long
-
-This improves **training stability and GPU efficiency**.
+> Although filtering is intended to limit sequence length, the distribution shows a **long-tail of outliers**, indicating that some samples exceed the threshold and may require further filtering.
 
 ---
 
@@ -136,11 +141,14 @@ Saved at:
 analysis/token_length_distribution.png
 ```
 
-The histogram confirms:
+### Observations
 
-- Most samples fall within a compact token range
-- There are no extreme outliers
-- The dataset is balanced for fine‑tuning
+- Majority of samples fall within **50–150 tokens**
+- Distribution is **right-skewed**
+- A small number of samples extend beyond **500 tokens**
+- Few extreme outliers exist up to **~1800 tokens**
+
+> Although outliers exist, they represent a small portion of the dataset and do not significantly affect the overall distribution.
 
 ---
 
@@ -166,3 +174,9 @@ This allows the model to:
 
 ---
 
+# Key Insights
+
+- The dataset is **well-structured and domain-focused**, suitable for instruction tuning.
+- Most samples lie in an optimal token range for efficient training.
+- Presence of long-sequence outliers suggests the need for stricter filtering for production-scale training.
+- The dataset balances **quality and relevance**, making it effective for HR-specific fine-tuning tasks.

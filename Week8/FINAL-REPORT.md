@@ -1,38 +1,48 @@
-
 # FINAL-REPORT.md
 # Week 8 — Day 5
 ## Capstone: Local LLM API Deployment
 
-This capstone demonstrates deploying a fine-tuned and quantized TinyLlama model as a local LLM API with an interactive UI.
+This capstone demonstrates the deployment of a fine-tuned and quantized TinyLlama model as a local LLM API with an interactive interface.
 
-The system exposes endpoints for text generation and chat, supports streaming responses, and includes a Streamlit interface.
+The system exposes endpoints for text generation and chat, supports streaming responses, and provides a Streamlit-based UI for real-time interaction.
 
 ---
 
 # Objective
 
-Deploy the quantized TinyLlama model as a local microservice that can:
+The objective of this project is to deploy a quantized LLM as a local microservice that can:
 
-- Generate responses from prompts
-- Handle chat conversations
+- Generate responses from user prompts
+- Handle multi-turn chat conversations
 - Stream tokens in real time
-- Be accessed through API and UI
+- Provide both API-based and UI-based interaction
 
 ---
 
-# Model Used
+# Model and Pipeline
 
 Base Model: TinyLlama-1.1B-Chat
 
-Pipeline used:
+Pipeline:
 
-TinyLlama Base Model  
-LoRA Fine-Tuning  
-Merge Adapter  
-Quantization (GGUF q8_0)  
-Local Deployment
+- TinyLlama Base Model  
+- LoRA Fine-Tuning (HR Dataset)  
+- Adapter Merging  
+- Quantization (GGUF q8_0)  
+- Deployment using FastAPI and llama.cpp  
 
-The model runs using llama.cpp for efficient CPU inference.
+The final model runs using llama.cpp for efficient CPU-based inference.
+
+---
+
+# System Architecture
+
+User (Streamlit UI / CURL / API Client)  
+→ FastAPI Server  
+→ llama.cpp Runtime  
+→ Quantized GGUF Model  
+
+This architecture enables efficient local inference without requiring high-end GPU resources.
 
 ---
 
@@ -40,7 +50,7 @@ The model runs using llama.cpp for efficient CPU inference.
 
 The model is deployed using FastAPI.
 
-### POST /generate
+## POST /generate
 
 Used for single prompt generation.
 
@@ -56,7 +66,7 @@ Example request:
 
 ---
 
-### POST /chat
+## POST /chat
 
 Used for conversational interaction with chat history.
 
@@ -74,17 +84,32 @@ Example request:
 
 ---
 
+# Performance Summary
+
+The deployed system demonstrates the following characteristics:
+
+- Efficient CPU inference using GGUF quantization
+- Reduced memory footprint compared to FP16 models
+- Real-time streaming of tokens
+- Stable latency for interactive applications
+
+Approximate benchmark observations:
+
+- GGUF Model: Low memory usage (~400–500 MB), slower tokens/sec
+- Base Model: High speed, high VRAM usage (~2.5 GB)
+- Fine-tuned Model: Balanced accuracy with slight latency increase
+
+---
+
 # Running the Application
 
 ## 1. Start the FastAPI Server
-
-Run the API server:
 
 ```bash
 uvicorn deploy.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-API documentation will be available at:
+API documentation:
 
 http://localhost:8000/docs
 
@@ -104,8 +129,6 @@ http://localhost:8501
 
 ## 3. Test API with CURL
 
-Example:
-
 ```bash
 curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d '{
 "system":"You are an HR assistant",
@@ -121,41 +144,51 @@ curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d
 
 # System Workflow
 
-User Interface (Streamlit)  
-FastAPI Server  
-llama.cpp Inference Engine  
-Quantized TinyLlama Model
+1. User sends request via UI or API  
+2. FastAPI receives and processes the request  
+3. Query is routed to the appropriate model  
+4. llama.cpp performs inference on quantized model  
+5. Tokens are streamed back to the user  
 
 ---
 
 # Screenshots
 
 ## Swagger API Test
-
 ![Swagger Test](ss/day5ss/post-chat-waggerui.png)
 
----
-
 ## Streamlit Interface
-
 ![Streamlit UI](ss/day5ss/streamlitop.png)
 
----
-
 ## CURL API Test
-
 ![Curl Test](ss/day5ss/usingcurl.png)
 
 ---
 
-# Result
+# Key Achievements
 
-The deployed system successfully provides:
+- Successfully deployed a fine-tuned LLM locally
+- Enabled real-time streaming inference
+- Integrated API and UI layers
+- Optimized model for CPU execution using quantization
+- Designed a modular and extensible architecture
 
-- Local LLM inference
-- REST API endpoints
-- Chat interface
-- Streaming responses
-- Adjustable generation parameters
+---
 
-The architecture can be extended for RAG systems, AI assistants, or agent workflows.
+# Use Cases
+
+- HR chatbot systems
+- Internal enterprise assistants
+- Policy and compliance automation
+- Retrieval-Augmented Generation (RAG) pipelines
+- Multi-agent systems
+
+---
+
+# Conclusion
+
+This project demonstrates a complete LLM lifecycle from fine-tuning to deployment. 
+
+It highlights how quantization and efficient inference frameworks can enable scalable and cost-effective AI systems on local infrastructure.
+
+The system can be further extended with retrieval pipelines, memory systems, and advanced agent workflows for real-world applications.

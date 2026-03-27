@@ -1,4 +1,5 @@
 # MULTIMODAL‑RAG --- Day 3 (Image Retrieval Augmented Generation)
+![Output](ss/day3ss/examplequery.png)
 
 ## Overview
 

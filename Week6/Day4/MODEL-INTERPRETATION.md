@@ -2,11 +2,9 @@
 
 ![Confusion Matrix](screenshots/confusion_matrix.png)
 
-![Error Heatmap](screenshots/error_heatmap.png)
 
-![Feature Importance](screenshots/feature_importance.png)
 
-![SHAP Summary](screenshots/shap_summary.png)
+
 
 ## 1. What I Started With (Day 3 Baseline)
 
@@ -109,7 +107,8 @@ SHAP vs simple feature importance:
 - Day 2/3 tree-based importance: shows how often a feature is used for splits.
 - Day 4 SHAP: shows how much each feature actually changes the predicted probability for real examples.
 - SHAP therefore gives a more faithful picture of the model’s reasoning.
-
+- 
+![SHAP Summary](screenshots/shap_summary.png)
 ---
 
 ## 7. Final Artifacts I Produced
@@ -123,6 +122,12 @@ SHAP vs simple feature importance:
 - src/evaluation/top_features.csv – numeric ranking of features.
 
 ---
+![Feature Importance](screenshots/feature_importance.png)
+
+---
+Error Heatmap
+![Error Heatmap](screenshots/error_heatmap.png)
+
 
 ## 8. My Personal Takeaways
 

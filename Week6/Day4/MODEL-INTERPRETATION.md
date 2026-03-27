@@ -1,5 +1,13 @@
 # Day 4 – Model Interpretation 
 
+![Confusion Matrix](screenshots/confusion_matrix.png)
+
+![Error Heatmap](screenshots/error_heatmap.png)
+
+![Feature Importance](screenshots/feature_importance.png)
+
+![SHAP Summary](screenshots/shap_summary.png)
+
 ## 1. What I Started With (Day 3 Baseline)
 
 - Task: Binary classification – predict if a house is Affordable (0) or Expensive (1).

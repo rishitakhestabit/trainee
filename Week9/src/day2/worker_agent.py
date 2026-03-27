@@ -4,7 +4,7 @@ from orchestrator.messages import WorkerTask, WorkerResult
 
 
 class WorkerAgent(RoutedAgent):
-    """RoutedAgent + message_handler for AutoGen's automatic message dispatch."""
+    """Worker Agent - Handles individual subtasks independently."""
 
     def __init__(self, model_client: ChatCompletionClient) -> None:
         super().__init__(description="Worker Agent - Task Processor")
@@ -12,50 +12,38 @@ class WorkerAgent(RoutedAgent):
 
     @message_handler
     async def handle_task(self, message: WorkerTask, ctx: MessageContext) -> WorkerResult:
+        """
+        Processes a single subtask assigned by the Planner.
+        Worker focuses ONLY on execution (no synthesis).
+        """
 
-        if message.previous_results:
-            # Synthesis mode: combine previous layer outputs
-            system_prompt = (
-                "You are a synthesis agent. "
-                "You have been provided with responses from previous agents. "
-                "Your task is to synthesize these into a single, high-quality response. "
-                "Critically evaluate the information, recognizing biases or errors. "
-                "Provide a refined, accurate, and comprehensive answer.\n\n"
-                "Previous responses:\n"
-            )
-            system_prompt += "\n".join(
-                [f"{i+1}. {result}" for i, result in enumerate(message.previous_results)]
-            )
-            messages = [
-                SystemMessage(content=system_prompt),
-                UserMessage(content=message.task, source="user")
-            ]
+        # ── Worker Execution Mode ──────────────────────────────
+        system_prompt = (
+            "You are a worker agent specialized in processing tasks independently. "
+            "Provide clear, accurate, and detailed responses. "
+            "Focus ONLY on the specific subtask assigned to you.\n\n"
+            f"IMPORTANT CONTEXT — Full original task: {message.original_task}\n"
+            "Use this context to give a specific, complete answer. "
+            "Do NOT ask clarifying questions. Just answer directly."
+        )
 
-        else:
-            # Fresh processing mode: include original task as context so workers
-            # never lose sight of the full query (fixes "could you specify?" issue)
-            system_prompt = (
-                "You are a worker agent specialized in processing tasks independently. "
-                "Provide clear, accurate, and detailed responses. "
-                "Focus ONLY on the specific subtask assigned to you.\n\n"
-                f"IMPORTANT CONTEXT — Full original task: {message.original_task}\n"
-                "Use this context to give a specific, complete answer. "
-                "Do NOT ask clarifying questions. Just answer directly."
-            )
-            messages = [
-                SystemMessage(content=system_prompt),
-                UserMessage(content=message.task, source="user")
-            ]
+        messages = [
+            SystemMessage(content=system_prompt),
+            UserMessage(content=message.task, source="user")
+        ]
 
+        # ── LLM Call ───────────────────────────────────────────
         model_result = await self._model_client.create(messages)
         result = str(model_result.content)
 
+        # ── Debug Output ───────────────────────────────────────
         print(f"\n{'='*80}")
         print(f"Worker-{self.id.key} (Subtask: {message.subtask_id})")
         print(f"{'-'*80}")
         print(f"{result[:200]}...")
         print(f"{'='*80}\n")
 
+        # ── Return Result ──────────────────────────────────────
         return WorkerResult(
             subtask_id=message.subtask_id,
             result=result,

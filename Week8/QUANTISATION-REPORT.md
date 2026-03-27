@@ -151,3 +151,36 @@ While FP16 models provide the highest quality, INT8 and INT4 significantly reduc
 GGUF quantisation enables efficient local deployment on CPU systems, making LLM applications accessible without requiring high-end hardware.
 
 The choice of quantisation technique depends on the deployment constraints and performance requirements.
+
+---
+
+## Note on Model Files
+
+The `quantized/` directory is not included in this repository due to large file size limitations.
+
+However, the folder exists locally and was used during:
+- Quantisation (Day 3)
+- Benchmarking (Day 4)
+- Deployment (Day 5)
+
+Local directory structure:
+
+quantized/
+ ├── model-q8_0.gguf
+ ├── model-q4_0.gguf
+ └── base-model.gguf
+
+All results, benchmarks, and deployment outputs in this project were generated using these models.
+
+---
+
+
+### Local Folder Screenshot
+
+![Quantized Folder](ss/day3ss/quantized_folder.png)
+
+---
+
+# Add this line in FINAL-REPORT.md
+
+Note: Quantized model files are not included in the repository due to size constraints but were used during benchmarking and deployment.

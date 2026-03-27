@@ -192,3 +192,36 @@ This project demonstrates a complete LLM lifecycle from fine-tuning to deploymen
 It highlights how quantization and efficient inference frameworks can enable scalable and cost-effective AI systems on local infrastructure.
 
 The system can be further extended with retrieval pipelines, memory systems, and advanced agent workflows for real-world applications.
+
+---
+
+## Note on Model Files
+
+The `quantized/` directory is not included in this repository due to large file size limitations.
+
+However, the folder exists locally and was used during:
+- Quantisation (Day 3)
+- Benchmarking (Day 4)
+- Deployment (Day 5)
+
+Local directory structure:
+
+quantized/
+ ├── model-q8_0.gguf
+ ├── model-q4_0.gguf
+ └── base-model.gguf
+
+All results, benchmarks, and deployment outputs in this project were generated using these models.
+
+---
+
+
+### Local Folder Screenshot
+
+![Quantized Folder](ss/day3ss/quantized_folder.png)
+
+---
+
+# Add this line in FINAL-REPORT.md
+
+Note: Quantized model files are not included in the repository due to size constraints but were used during benchmarking and deployment.

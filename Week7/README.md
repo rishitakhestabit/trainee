@@ -108,31 +108,31 @@ GROQ_MODEL=llama-3.3-70b-versatile
 # Screenshots
 
 ## PDF Ingestion
-![Ingest PDF](ss/day5ss/ansafteringestingpdf.png)
+![Ingest PDF](src/ss/day5ss/ansafteringestingpdf.png)
 
 ## PDF Question Answering
-![Query PDF](ss/day5ss/quesfrompdfday1.png)
+![Query PDF](src/ss/day5ss/quesfrompdfday1.png)
 
 ## Image Ingest
-![Image Ingest](ss/day5ss/day3img2imgans.png)
+![Image Ingest](src/ss/day5ss/day3img2imgans.png)
 
 ## Image to Query
-![Image Query](ss/day5ss/day3imgtoimgquery.png)
+![Image Query](src/ss/day5ss/day3imgtoimgquery.png)
 
 ## Streamlit Upload
-![Upload UI](ss/day5ss/ingestingpdfstreamlit.png)
+![Upload UI](src/ss/day5ss/ingestingpdfstreamlit.png)
 
 ## Streamlit Query
-![Query UI](ss/day5ss/querystreamlit.png)
+![Query UI](src/ss/day5ss/querystreamlit.png)
 
 ## Retrieval Output
-![Retrieve](ss/day5ss/retrieveandstreamlit.png)
+![Retrieve](src/ss/day5ss/retrieveandstreamlit.png)
 
 ## SQL Query
-![SQL](ss/day5ss/sqlquery.png)
+![SQL](src/ss/day5ss/sqlquery.png)
 
 ## Streamlit UI
-![UI](ss/day5ss/streamlitui.png)
+![UI](src/ss/day5ss/streamlitui.png)
 
 ---
 

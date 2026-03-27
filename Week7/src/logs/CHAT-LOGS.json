@@ -230,39 +230,39 @@
   ],
   "demo": [
     {
-      "time": "2026-03-20T12:39:47.972689",
+      "time": "2026-03-27T16:12:03.346025",
       "role": "assistant",
-      "text": "The work policy at AstraZeneca includes being a great place to work, respecting all employees, valuing openness, celebrating diversity, and ensuring every voice is heard. The company also aims to uphold its values, deliver strategic priorities, and sustain and improve short- and long-term performance. Additionally, the company is committed to hiring and promoting talent ethically and in compliance with applicable laws, and has implemented measures such as pay equity training to ensure equitable reward and compensation.",
+      "text": "There is no mention of deliverables in Week-5. The context only mentions \"Week-5 Topics\" and \"Exer...\" but does not specify any deliverables. Deliverables are mentioned in other weeks (Week-2, Week-6, Week-7) but not in Week-5.",
       "meta": {}
     },
     {
-      "time": "2026-03-20T12:39:47.974361",
-      "role": "evaluation",
-      "text": "scores",
-      "meta": {
-        "confidence": 0.5,
-        "latency": 0.086
-      }
-    },
-    {
-      "time": "2026-03-20T12:47:54.155102",
-      "role": "user",
-      "text": "what is the work policy?",
-      "meta": {}
-    },
-    {
-      "time": "2026-03-20T12:47:57.763235",
-      "role": "assistant",
-      "text": "The work policy at AstraZeneca includes being a great place to work, respecting all employees, valuing openness, celebrating diversity, and ensuring every voice is heard. The company also aims to uphold its values, deliver strategic priorities, and sustain and improve short- and long-term goals through its global workforce. Additionally, the company is committed to hiring and promoting talent ethically and in compliance with applicable laws, and has implemented measures such as pay equity training to ensure equitable reward and compensation.",
-      "meta": {}
-    },
-    {
-      "time": "2026-03-20T12:47:57.764966",
+      "time": "2026-03-27T16:12:03.347574",
       "role": "evaluation",
       "text": "scores",
       "meta": {
         "confidence": 0.8,
-        "latency": 0.309
+        "latency": 0.308
+      }
+    },
+    {
+      "time": "2026-03-27T16:12:25.104047",
+      "role": "user",
+      "text": "summary of Week-5 pdf",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-27T16:12:32.706639",
+      "role": "assistant",
+      "text": "Week 5 is about Server Side Foundations with Docker & DevOps Basics. The objective is to help interns understand how production servers work by using Docker to simulate deployment environments locally. The topics covered include Docker Fundamentals, Linux Internals, images, containers, volumes, networks, and basic container OS operations.",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-27T16:12:32.707358",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "confidence": 0.8,
+        "latency": 0.175
       }
     }
   ]

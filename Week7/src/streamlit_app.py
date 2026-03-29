@@ -528,11 +528,27 @@ with tab1:
                         st.write("### Answer")
                         st.write(res.get("answer"))
 
+                        # if "eval" in res:
+                        #     eval_data = res["eval"]
+                        #     col1, col2 = st.columns(2)
+                        #     col1.metric("Confidence", round(eval_data.get("confidence", 0), 3))
+                        #     col2.metric("Latency (sec)", eval_data.get("latency", 0))
+                        #     st.progress(float(eval_data.get("confidence", 0)))
+
                         if "eval" in res:
                             eval_data = res["eval"]
-                            col1, col2 = st.columns(2)
+
+                            col1, col2, col3 = st.columns(3)
+
                             col1.metric("Confidence", round(eval_data.get("confidence", 0), 3))
-                            col2.metric("Latency (sec)", eval_data.get("latency", 0))
+                            col2.metric("Faithfulness", round(eval_data.get("faithfulness", 0), 3))
+                            col3.metric("Context Match", round(eval_data.get("context_relevance", 0), 3))
+
+                            st.metric("Latency (sec)", eval_data.get("latency", 0))
+
+                            if eval_data.get("hallucination", 0) == 1:
+                                st.error(" Possible hallucination detected")
+
                             st.progress(float(eval_data.get("confidence", 0)))
 
                         if "sources" in res and res["sources"]:

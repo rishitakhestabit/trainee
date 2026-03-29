@@ -213,8 +213,9 @@ def ask(req: AskRequest):
         scores = evaluator.score(req.query, answer, context)
 
         # -------- SELF REFLECTION --------
-        if scores.get("confidence", 1.0) < 0.4:
-            answer = "Low confidence answer. Please verify."
+
+        if scores.get("confidence", 1.0) < 0.4 or scores.get("hallucination", 0) == 1:
+            answer = "Low confidence or hallucinated answer. Please verify."
             scores = evaluator.score(req.query, answer, context)
 
         memory.add(req.session_id, "assistant", answer)

@@ -230,27 +230,6 @@
   ],
   "demo": [
     {
-      "time": "2026-03-27T16:12:03.346025",
-      "role": "assistant",
-      "text": "There is no mention of deliverables in Week-5. The context only mentions \"Week-5 Topics\" and \"Exer...\" but does not specify any deliverables. Deliverables are mentioned in other weeks (Week-2, Week-6, Week-7) but not in Week-5.",
-      "meta": {}
-    },
-    {
-      "time": "2026-03-27T16:12:03.347574",
-      "role": "evaluation",
-      "text": "scores",
-      "meta": {
-        "confidence": 0.8,
-        "latency": 0.308
-      }
-    },
-    {
-      "time": "2026-03-27T16:12:25.104047",
-      "role": "user",
-      "text": "summary of Week-5 pdf",
-      "meta": {}
-    },
-    {
       "time": "2026-03-27T16:12:32.706639",
       "role": "assistant",
       "text": "Week 5 is about Server Side Foundations with Docker & DevOps Basics. The objective is to help interns understand how production servers work by using Docker to simulate deployment environments locally. The topics covered include Docker Fundamentals, Linux Internals, images, containers, volumes, networks, and basic container OS operations.",
@@ -263,6 +242,30 @@
       "meta": {
         "confidence": 0.8,
         "latency": 0.175
+      }
+    },
+    {
+      "time": "2026-03-29T18:35:54.059922",
+      "role": "user",
+      "text": "what is the content in week-3",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-29T18:35:58.690250",
+      "role": "assistant",
+      "text": "The content in Week 3 includes:\n\n1. Next.js Fundamentals: \n   - File-based routing\n   - App Router\n   - Pages\n   - Routing\n   - Layouts\n   - Image optimization\n   - SSR vs CSR basics\n\n2. TailwindCSS: \n   - Utility-first design\n   - Responsive components\n   - Reusable design system\n\nHands-on exercises and deliverables include:\n- Tailwind Setup\n- Converting Figma/screenshot into Tailwind components\n- Component System Design (building Button, Card, Modal, Avatar, Badge)\n- Next.js Routing (multi-page project with shared layout)\n- Replicating a SaaS landing page\n- Creating a reusable component library (ui/ library)",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-29T18:35:58.691533",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "confidence": 1.0,
+        "faithfulness": 1.0,
+        "context_relevance": 1.0,
+        "hallucination": 0,
+        "latency": 1.026
       }
     }
   ]

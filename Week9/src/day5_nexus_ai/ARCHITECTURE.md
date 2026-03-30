@@ -11,6 +11,8 @@ multiple specialized agents collaborate to solve complex tasks. The
 system is designed around planning, orchestration, memory integration,
 and iterative improvement.
 
+![Multi-Agent System](../../ss/day5/architecture.svg)
+
 ------------------------------------------------------------------------
 
 ## 2. High-Level Flow

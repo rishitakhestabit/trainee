@@ -6,13 +6,10 @@ import re
 import sys
 import glob
 from autogen_agentchat.messages import TextMessage
-
 from agents.planner import planner, ExecutionPlan
 from agents.orchestrator import run_autonomous_loop, memory_manager
 from config import OUTPUT_DIR, LOG_DIR, LOG_FILE_PATH
 from tools import create_log_entry
-
-
 def initialize_workspace(clear_output=False):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
@@ -77,7 +74,6 @@ MEMORY CONTEXT:
 
     return execution_plan
 
-
 def print_results(results):
     import glob
     import os
@@ -137,9 +133,7 @@ async def run_nexus(query, clear_output=False):
     print("=" * 60 + "\n")
 
     initialize_workspace(clear_output)
-
     execution_plan = await generate_execution_plan(query)
-
     print(f"[PLAN] {len(execution_plan.steps)} steps generated.\n")
 
     for step in execution_plan.steps:
@@ -152,7 +146,6 @@ async def run_nexus(query, clear_output=False):
         "query": query,
         "results": results,
     }
-
 
 async def main():
 
@@ -196,9 +189,7 @@ async def main():
         clear = input("Clear previous output? (y/n): ").strip().lower() == "y"
 
         try:
-
             result = await run_nexus(query, clear)
-
             print("\n" + "=" * 60)
             print("EXECUTION COMPLETE")
             print("=" * 60 + "\n")
@@ -215,7 +206,6 @@ async def main():
                     "agents_run": list(results.keys()),
                 },
             )
-
         except Exception as e:
 
             print(f"\n[FATAL ERROR] {e}")
@@ -226,7 +216,6 @@ async def main():
                 "fatal_error",
                 {"error": str(e)},
             )
-
 
 if __name__ == "__main__":
     asyncio.run(main())

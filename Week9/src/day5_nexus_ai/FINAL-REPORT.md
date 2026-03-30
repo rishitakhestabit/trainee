@@ -271,3 +271,6 @@ Final stage:
 Reporter compiles all results
 Generates final response
 System returns final answer to user
+
+
+![ARchitecture](../../ss/day5/architecture.svg)

@@ -7,11 +7,6 @@
 ## PROJECT STRUCTURE (Screenshots)
 
 ![CLI](../../ss/day3/cli.png) 
-![Entry Test](../../ss/day3/entriestest.png)
-![Streamlit Input](../../ss/day3/inputstreamlit.png) 
-![Streamlit Output](../../ss/day3/outputstreamlit.png) 
-![File Upload](../../ss/day3/streamlitpdfupload.png) 
-![Code Execution](../../ss/day3/testcode.png)
 
 ------------------------------------------------------------------------
 
@@ -125,14 +120,6 @@ passing between agents - Result synthesis
 
 Reference: fileciteturn11file4
 
-------------------------------------------------------------------------
-
-## STREAMLIT INTERFACE (app.py)
-
-Features: - Chat-based interaction - File upload system - Agent result
-visualization - Real-time execution status
-
-Reference: fileciteturn11file5
 
 ------------------------------------------------------------------------
 

@@ -1,12 +1,12 @@
 from autogen_agentchat.agents import AssistantAgent
-from autogen_ext.models.ollama import OllamaChatCompletionClient
+# from autogen_ext.models.ollama import OllamaChatCompletionClient
 from autogen_core.model_context import BufferedChatCompletionContext
-
-model_client = OllamaChatCompletionClient(model="qwen2.5:7b-instruct-q4_0")
+from utils.model_client import get_model_client
+# model_client = OllamaChatCompletionClient(model="qwen2.5:7b-instruct-q4_0")
 
 research_agent = AssistantAgent(
     name="ResearchAgent",
-    model_client=model_client,
+    model_client=get_model_client(),
     system_message="""You are a Research Agent. Your sole job is to gather and organize raw information.
     - Find relevant facts, data, pseudocode, or technical details about the topic
     - Structure your findings with clear headings and bullet points

@@ -22,9 +22,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
     handlers=[
-        logging.FileHandler(log_filename),
-        logging.StreamHandler()
-    ]
+    logging.FileHandler(log_filename)
+]
 )
 logger = logging.getLogger(__name__)
 # ── Pipeline ──────────────────────────────────────────────────
@@ -79,7 +78,7 @@ async def run_pipeline(query: str) -> str:
 # ── Continuous Conversation Loop 
 async def main():
     print("\n" + "=" * 60)
-    print("  NEXUS AGENT PIPELINE — Type 'exit' to quit")
+    print(" AGENT PIPELINE — Type 'exit' to quit")
     print("=" * 60 + "\n")
 
     while True:
@@ -93,7 +92,8 @@ async def main():
             print("\n  Goodbye! All logs saved to:", logs_dir)
             break
 
-        await run_pipeline(query)
+        result = await run_pipeline(query)
+        print(f"\nAnswer:\n{result}")
         print("\n" + "-" * 60 + "\n")
 
 

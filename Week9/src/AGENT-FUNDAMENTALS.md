@@ -39,6 +39,25 @@ logs/
 
 ---
 
+## Model Configuration
+
+The system uses a Large Language Model (LLM) for all agent reasoning tasks.
+
+Initially, the system was implemented using a local model (Qwen via Ollama). However, due to higher response latency and slower execution times, the implementation was updated to use Groq API for faster inference.
+
+Current setup:
+- Provider: Groq
+- Model: llama-3.3-70b-versatile
+- API-based inference for low latency and better performance
+
+Reason for change:
+- Faster response times
+- Improved developer experience during testing
+- More efficient multi-agent pipeline execution
+
+The model configuration is managed using environment variables and a shared model client for scalability and clean architecture.
+
+
 ## Research Agent
 
 File: agents/research_agent.py

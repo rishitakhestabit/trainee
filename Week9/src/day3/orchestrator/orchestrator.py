@@ -1,257 +1,161 @@
-import re
-from typing import List, Dict, Any, Callable, Optional
-
-from tools.code_executor import CodeExecutor
-from tools.db_agent import DatabaseAgent
+import re, ast, json
 from tools.file_agent import FileAgent
+from tools.db_agent import DatabaseAgent
+from tools.code_executor import CodeExecutor
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.messages import TextMessage
+from utils.model_client import get_model_client
 
+def make_agent(name, prompt):
+    return AssistantAgent(name=name, model_client=get_model_client(), system_message=prompt)
+
+def clean(text):
+    return re.sub(r"```\w*\n?", "", text).strip()
+
+def extract_row_count(query):
+    m = re.search(r"\b(\d+)\s*(?:rows?|employees?|entries|items?|students?|products?|records?|orders?)\b", query, re.I)
+    return int(m.group(1)) if m else 10
 
 class Orchestrator:
-    def __init__(self, database_path: str = "sales.db"):
-        self.agents = {
-            "code": CodeExecutor(),
-            "database": DatabaseAgent(database_path),
-            "file": FileAgent(base_dir="."),
-        }
+    def __init__(self):
+        self.fa   = FileAgent()
+        self.db   = DatabaseAgent()
+        self.code = CodeExecutor()
 
-    # ── Intent detectors ──────────────────────────────────────────────────────
+        self.planner = make_agent("planner", """
+You decide how to handle the user query.
 
-    def _extract_file_references(self, text: str) -> List[str]:
-        return re.findall(r'\b[\w\-.\/\\]+\.(?:csv|txt|db|md)\b', text, flags=re.IGNORECASE)
+If the query is about CSV files, databases, or data (create, read, analyze, convert, query, update):
+  Return a Python list using ONLY these keywords:
+    create_csv, read_csv, analyze, csv_to_db, query_db, update_db
 
-    def _wants_code(self, text: str) -> bool:
-        """User explicitly wants code written or shown."""
-        lowered = text.lower()
-        return any(phrase in lowered for phrase in [
-            "write python", "write code", "show code", "give code",
-            "python code", "python function", "write a function",
-            "write a script", "code to", "code for",
-        ])
+  Rules:
+  - "create and query"      -> ["create_csv", "csv_to_db", "query_db"]
+  - "create and analyze"    -> ["create_csv", "analyze"]
+  - "convert and query"     -> ["csv_to_db", "query_db"]
+  - "read/analyze/insights" -> ["read_csv", "analyze"]
+  - Always put csv_to_db before query_db when no .db file is mentioned
 
-    def _is_pure_code_task(self, text: str) -> bool:
-        """No file involved — pure computation or code generation."""
-        has_file = bool(self._extract_file_references(text))
-        return not has_file and (
-            self._wants_code(text)
-            or any(w in text.lower() for w in [
-                "calculate", "compute", "print", "sort", "reverse",
-                "fibonacci", "factorial", "prime", "sum of",
-            ])
-        )
+If the query is a general coding/programming question (fibonacci, sorting, algorithms, etc.):
+  Return exactly: ["run_code"]
 
-    def _is_list_files_request(self, text: str) -> bool:
-        lowered = text.lower().strip()
-        return any(p in lowered for p in [
-            "list files", "show files", "display files",
-            "list all files", "show all files",
-        ])
+Return ONLY a valid Python list. Examples:
+- "generate fibonacci"         -> ["run_code"]
+- "write a python sort"        -> ["run_code"]
+- "create employees.csv"       -> ["create_csv"]
+- "analyze sales.csv"          -> ["read_csv", "analyze"]
+- "convert sales.csv to db"    -> ["csv_to_db", "query_db"]
+""")
 
-    def _is_read_file_request(self, text: str) -> bool:
-        lowered = text.lower()
-        files = self._extract_file_references(text)
-        return bool(files) and any(w in lowered for w in [
-            "read", "show", "display", "open", "view", "contents", "content",
-        ])
+        self.sql_agent = make_agent("sql", """
+Convert natural language to a SQLite SELECT query.
+Table name: data
+All values are TEXT - use CAST(col AS REAL) for numeric comparisons.
+Return ONLY the raw SQL SELECT statement. No explanation, no markdown.
+Examples:
+- top 3 by salary           -> SELECT * FROM data ORDER BY CAST(salary AS REAL) DESC LIMIT 3
+- filter HR department      -> SELECT * FROM data WHERE department = 'HR'
+- revenue greater than 5000 -> SELECT * FROM data WHERE CAST(revenue AS REAL) > 5000
+- cheapest 3 items          -> SELECT * FROM data ORDER BY CAST(price AS REAL) ASC LIMIT 3
+- all orders                -> SELECT * FROM data
+""")
 
-    def _is_write_file_request(self, text: str) -> bool:
-        lowered = text.lower()
-        files = self._extract_file_references(text)
-        return bool(files) and any(w in lowered for w in [
-            "create", "write", "save", "generate", "make",
-        ])
+        self.update_agent = make_agent("updater", """
+Extract update details from the request.
+Return ONLY valid JSON with exactly these keys: "row" (int), "column" (str), "value" (str).
+Example: {"row": 2, "column": "salary", "value": "95000"}
+""")
 
-    def _is_csv_write_request(self, text: str) -> bool:
-        """CSV creation — needs code agent to generate data first."""
-        lowered = text.lower()
-        return (
-            ".csv" in lowered
-            and any(w in lowered for w in ["create", "write", "save", "generate", "make"])
-            and any(w in lowered for w in ["columns", "rows", "fields", "data", "with"])
-        )
+        self.summarizer = make_agent("summarizer", """
+Summarize the result in 2-3 clear helpful lines for the user.
+""")
 
-    def _is_csv_analysis_request(self, text: str) -> bool:
-        lowered = text.lower()
-        return ".csv" in lowered and any(w in lowered for w in [
-            "summarize", "summary", "analyze", "analysis",
-            "insight", "insights", "explain", "calculate", "total",
-            "read", "show", "display", "contents",
-        ])
+    async def _ask(self, agent, content):
+        res = await agent.on_messages([TextMessage(content=content, source="user")], None)
+        return res.chat_message.content.strip()
 
-    def _is_csv_to_db_request(self, text: str) -> bool:
-        lowered = text.lower()
-        return ".csv" in lowered and ".db" in lowered and any(
-            w in lowered for w in ["convert", "create", "save", "make", "load"]
-        )
+    async def run(self, query):
+        raw = await self._ask(self.planner, query)
+        try:
+            steps = ast.literal_eval(clean(raw))
+        except Exception:
+            steps = re.findall(r"create_csv|read_csv|analyze|csv_to_db|query_db|update_db|run_code", raw)
 
-    def _is_database_request(self, text: str) -> bool:
-        lowered = text.lower()
-        return ".csv" not in lowered and any(w in lowered for w in [
-            ".db", "database", "sqlite", "table", "rows", "records",
-            "sql", "query", "select", "top 5", "most expensive", "cheapest",
-        ])
+        csv_name = FileAgent.detect(query, "csv")
+        db_name  = FileAgent.detect(query, "db")
+        n_rows   = extract_row_count(query)
+        results, data = [], None
 
-    # ── Router ────────────────────────────────────────────────────────────────
+        for step in steps:
 
-    async def analyze_request(self, user_request: str) -> List[str]:
-        if self._is_list_files_request(user_request):
-            return ["file"]
+            if step == "run_code":
+                out = await self.code.run(query, show_code=True)
+                results.append(f"Output:\n{out}")
 
-        if self._is_csv_to_db_request(user_request):
-            return ["code"]
-
-        if self._is_csv_analysis_request(user_request):
-            return ["file", "code"]
-
-        if self._is_database_request(user_request):
-            return ["database"]
-
-        # ── CSV write: code generates data first, then file writes it ─────────
-        if self._is_csv_write_request(user_request):
-            return ["code", "file"]
-
-        if self._is_write_file_request(user_request) and ".db" not in user_request.lower():
-            return ["file"]
-
-        if self._is_read_file_request(user_request):
-            return ["file"]
-
-        if self._is_pure_code_task(user_request):
-            return ["code"]
-
-        # Default
-        return ["code"]
-
-    # ── Execution ─────────────────────────────────────────────────────────────
-
-    async def execute_with_agents(
-        self,
-        user_request: str,
-        agent_names: List[str],
-        status_callback: Optional[Callable[[str], None]] = None,
-    ) -> Dict[str, Any]:
-        results: Dict[str, Any] = {}
-
-        for name in agent_names:
-            if status_callback:
-                status_callback(f"Running {name} agent...")
-
-            # ── File agent after code agent ───────────────────────────────────
-            if name == "file" and "code" in results:
-
-                code_result = results["code"]
-                if isinstance(code_result, dict):
-                    csv_content = code_result.get("execution_result", "").strip()
-
-                    # fallback if empty
-                    if not csv_content:
-                        csv_content = code_result.get("generated_code", "").strip()
-                else:
-                    csv_content = str(code_result).strip()
-
-                # prevent empty file creation
-                if not csv_content:
-                    results[name] = "Error: No CSV content generated by code agent."
-                    continue
-
-                # If code agent produced CSV-like content, pass it to file agent
-                if csv_content and "," in csv_content:
-                    enriched = (
-                        f"{user_request}\n\n"
-                        f"--- Generated CSV content (write this exactly) ---\n"
-                        f"{csv_content}"
-                    )
-                else:
-                    # Code agent didn't produce CSV data — let file agent handle it alone
-                    enriched = user_request
-
-                results[name] = await self.agents[name].process_request(enriched)
-
-            # ── Code agent after file agent (analysis) ────────────────────────
-            elif name == "code" and "file" in results:
-                enriched = (
-                    f"{user_request}\n\n"
-                    f"--- Data from file ---\n{results['file']}"
+            elif step == "create_csv":
+                csv_name = csv_name or FileAgent.default_name(query, "csv")
+                raw_out = await self.code.run(
+                    f"Generate exactly {n_rows} rows of realistic CSV data for: {query}.\n"
+                    f"Use pandas to build a DataFrame with appropriate columns and realistic varied values.\n"
+                    f"Print using: print(df.to_csv(index=False))\n"
+                    f"Do not save to disk."
                 )
-                results[name] = await self.agents[name].process_request(enriched)
+                csv_clean = FileAgent.clean_csv(raw_out)
+                row_count = len(csv_clean.splitlines()) - 1
+                if row_count < 1:
+                    results.append("ERROR: Failed to generate CSV content.")
+                    break
+                self.fa.save(csv_name, csv_clean)
+                data = csv_clean
+                results.append(f"CSV created: output/{csv_name} ({row_count} rows)")
 
-            # ── All other agents run independently ────────────────────────────
-            else:
-                results[name] = await self.agents[name].process_request(user_request)
+            elif step == "read_csv":
+                csv_name = csv_name or FileAgent.default_name(query, "csv")
+                data = self.fa.read(csv_name)
+                if data is None:
+                    results.append(f"ERROR: {csv_name} not found. Create it first.")
+                    break
+                results.append(f"Loaded {csv_name} ({len(data.splitlines())-1} rows)")
 
-        return results
+            elif step == "analyze":
+                if not data:
+                    results.append("ERROR: No data to analyze.")
+                    break
+                out = await self.code.run(f"Analyze this CSV data and answer: {query}", data)
+                results.append(f"Analysis:\n{out}")
 
-    # ── Synthesis ─────────────────────────────────────────────────────────────
+            elif step == "csv_to_db":
+                if not csv_name:
+                    results.append("ERROR: No CSV file to convert.")
+                    break
+                db_name = self.db.csv_to_db(csv_name)
+                results.append(f"Database created: {db_name}")
 
-    async def synthesize_results(
-        self,
-        user_request: str,
-        results: Dict[str, Any],
-    ) -> str:
-        wants_code = self._wants_code(user_request)
+            elif step == "query_db":
+                db_name = db_name or (csv_name.replace(".csv", ".db") if csv_name else None)
+                if not db_name:
+                    results.append("ERROR: No database found. Mention a .db file or convert a CSV first.")
+                    break
+                schema  = self.db.schema(db_name)
+                sql     = clean(await self._ask(self.sql_agent,
+                            f"Query: {query}\nColumns available: {schema}"))
+                results.append(f"SQL: {sql}\nResults:\n{self.db.query(sql, db_name)}")
 
-        if "database" in results:
-            return str(results["database"]).strip()
+            elif step == "update_db":
+                db_name = db_name or (csv_name.replace(".csv", ".db") if csv_name else None)
+                if not db_name:
+                    results.append("ERROR: No database found to update.")
+                    break
+                raw_info = await self._ask(self.update_agent, query)
+                try:
+                    info = json.loads(clean(raw_info))
+                    out  = self.db.update(db_name, info["row"], info["column"], info["value"])
+                    results.append(f"Updated row {info['row']}, '{info['column']}' -> '{info['value']}':\n{out}")
+                except Exception as e:
+                    results.append(f"ERROR: Update failed: {e}")
 
-        if "file" in results and "code" in results:
-            # CSV write: show file agent result (confirmation of what was written)
-            if self._is_csv_write_request(user_request):
-                return str(results["file"]).strip()
-            # CSV analysis: show code agent result
-            code_result = results["code"]
-            if isinstance(code_result, dict):
-                if wants_code:
-                    return code_result.get("generated_code", "").strip()
-                return code_result.get("execution_result", "").strip()
-            return str(code_result).strip()
 
-        if "file" in results:
-            return str(results["file"]).strip()
 
-        if "code" in results:
-            code_result = results["code"]
-            if isinstance(code_result, dict):
-                if wants_code:
-                    generated = code_result.get("generated_code", "").strip()
-                    executed  = code_result.get("execution_result", "").strip()
-                    parts = []
-                    if generated:
-                        parts.append(f"Generated code:\n{generated}")
-                    if executed and executed != generated:
-                        parts.append(f"Output:\n{executed}")
-                    return "\n\n".join(parts) if parts else "No output."
-                return code_result.get("execution_result", "").strip()
-            return str(code_result).strip()
-
-        return "Task completed successfully."
-
-    # ── Entry point ───────────────────────────────────────────────────────────
-
-    async def process_request(
-        self,
-        user_request: str,
-        status_callback: Optional[Callable[[str], None]] = None,
-    ) -> Dict[str, Any]:
-        if status_callback:
-            status_callback("Analyzing request...")
-
-        agent_names = await self.analyze_request(user_request)
-
-        if status_callback:
-            status_callback(f"Using agents: {', '.join(agent_names)}")
-
-        results = await self.execute_with_agents(
-            user_request=user_request,
-            agent_names=agent_names,
-            status_callback=status_callback,
-        )
-
-        if status_callback:
-            status_callback("Synthesizing results...")
-
-        final_answer = await self.synthesize_results(user_request, results)
-
-        return {
-            "final_answer": final_answer,
-            "agents_used": agent_names,
-            "agent_results": results,
-        }
+        combined = "\n".join(results)
+        summary  = await self._ask(self.summarizer, combined)
+        return f"{combined}\n\nSummary:\n{summary}"

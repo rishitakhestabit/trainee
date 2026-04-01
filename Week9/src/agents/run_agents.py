@@ -4,14 +4,14 @@ import os
 import sys
 from datetime import datetime
 
-# ── Path Fix ──────────────────────────────────────────────────
+# ── Path Fix 
 sys.path.insert(0, os.path.dirname(__file__))
 
 from research_agent import research_agent
 from summarizer_agent import summarizer_agent
 from answer_agent import answer_agent
 
-# ── Logging Setup ─────────────────────────────────────────────
+# ── Logging Setup
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 logs_dir = os.path.join(project_root, "logs")
 os.makedirs(logs_dir, exist_ok=True)
@@ -23,10 +23,9 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
     handlers=[
     logging.FileHandler(log_filename)
-]
-)
+])
 logger = logging.getLogger(__name__)
-# ── Pipeline ──────────────────────────────────────────────────
+# ── Pipeline
 async def run_pipeline(query: str) -> str:
     logger.info("=" * 60)
     logger.info("PIPELINE STARTED")

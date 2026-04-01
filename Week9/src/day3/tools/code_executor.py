@@ -1,5 +1,6 @@
 import re, io, csv, json, contextlib
 import pandas as pd
+import numpy as np
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from utils.model_client import get_model_client
@@ -12,7 +13,7 @@ class CodeExecutor:
             system_message="""You generate clean executable Python code only.
 Rules:
 - pandas is available as `pd`, io is available as `io`
-- CSV data is in variable `data` (string) - read with: df = pd.read_csv(io.StringIO(data))
+- CSV data is in variable `data` (string) - read with: df = pd.read_csv(io.StringIO(data)) if data else None
 - Always print() every result
 - Return ONLY raw Python code, no markdown, no backticks, no explanation"""
         )
@@ -23,10 +24,13 @@ Rules:
         code = re.sub(r"```\w*\n?", "", res.chat_message.content).strip()
         buf = io.StringIO()
         try:
+            df = pd.read_csv(io.StringIO(data)) if data else None
             with contextlib.redirect_stdout(buf):
                 exec(compile(code, "<string>", "exec"), {
-                    "pd": pd, "io": io, "csv": csv, "json": json, "data": data
-                })
+                        "pd": pd, "io": io, "csv": csv, "json": json,
+                        "np": np, "data": data, "df": df,
+                        "__builtins__": __builtins__
+                    })
             output = buf.getvalue().strip() or "Done"
             if show_code:
                 return f"Code:\n{code}\n\nOutput:\n{output}"

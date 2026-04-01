@@ -13,10 +13,10 @@ class ReflectionAgent(RoutedAgent):
 
     @message_handler
     async def handle_task(self, message: ReflectionTask, ctx: MessageContext) -> ReflectionResult:
-
+        MAX_LEN = 1500
         # Truncate each worker result to 500 chars to reduce context size
         combined = "\n\n".join([
-            f"--- Worker {i+1} (Subtask: {wr.subtask_id}) ---\n{wr.result[:500]}"
+            f"--- Worker {i+1} (Subtask: {wr.subtask_id}) ---\n{wr.result[:MAX_LEN]}"
             for i, wr in enumerate(message.worker_results)
         ])
 
@@ -38,10 +38,6 @@ class ReflectionAgent(RoutedAgent):
         # Cap output to 400 tokens to prevent long generation
         model_result = await self._model_client.create(messages)
         result_text = str(model_result.content)
-
-        print(f"\n{'='*80}")
-        print(f"Reflection-{self.id.key}")
-        print(f"{'-'*80}")
         print(f"{result_text[:300]}...")
         print(f"{'='*80}\n")
 

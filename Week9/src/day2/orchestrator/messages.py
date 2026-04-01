@@ -13,7 +13,7 @@ class TaskPlan:
     """Planner's breakdown of task into subtasks."""
     original_task: str
     subtasks: List[str]
-    execution_graph: Dict[str, List[str]]  # DAG structure
+
 
 @dataclass
 class WorkerTask:

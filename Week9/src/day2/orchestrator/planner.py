@@ -65,22 +65,15 @@ class PlannerAgent(RoutedAgent):
         model_result = await self._model_client.create(messages)
         subtasks = self._parse_subtasks(str(model_result.content))
 
-        execution_graph = {
-            "layer_0": [f"subtask_{i}" for i in range(len(subtasks))],
-            "layer_1": ["reflector"],
-            "layer_2": ["validator"]
-        }
-
         print(f"\nGenerated {len(subtasks)} subtasks:")
         for i, st in enumerate(subtasks):
             print(f"  {i+1}. {st[:80]}...")
-        print(f"\nExecution Graph: {execution_graph}")
         print(f"{'='*80}\n")
 
         return TaskPlan(
             original_task=task,
             subtasks=subtasks,
-            execution_graph=execution_graph
+
         )
 
     def _parse_subtasks(self, llm_output: str) -> List[str]:

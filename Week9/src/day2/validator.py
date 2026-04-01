@@ -40,8 +40,7 @@ class ValidatorAgent(RoutedAgent):
         is_valid = "VALIDATION: PASS" in validation_text
 
         print(f"\n{'='*80}")
-        print(f"Validator-{self.id.key}")
-        print(f"{'-'*80}")
+
         print(f"Validation Status: {'PASS' if is_valid else 'FAIL'}")
         print(f"{'='*80}\n")
 

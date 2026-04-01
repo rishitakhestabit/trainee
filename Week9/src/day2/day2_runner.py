@@ -50,15 +50,6 @@ async def run_day2_pipeline(query: str) -> str:
     planner_id = AgentId("planner", "main")
     result = await runtime.send_message(UserTask(task=query), planner_id)
 
-    # ── Execution Tree (simplified)
-    print("\nEXECUTION TREE:")
-    print("  Planner")
-    print("   ├── Worker-1")
-    print("   ├── Worker-2")
-    print("   ├── Worker-3")
-    print("   └── Reflection")
-    print("        └── Validator\n")
-
     # ── Final Output
     print("FINAL ANSWER:\n")
     print(result.result)

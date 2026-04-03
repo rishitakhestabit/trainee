@@ -50,7 +50,7 @@ Examples:
 - "create sales.csv with 50 rows"                   -> ["create_csv"]
 - "analyze sales.csv"                               -> ["read_csv", "analyze"]
 - "convert sales.csv to sales.db"                   -> ["csv_to_db", "query_db"]
-- "generate fibonacci"                              -> ["run_code"]
+- "generate or write code of fibonacci"             -> ["run_code"]
 """)
 
         self.sql_agent = make_agent("sql", """
@@ -77,7 +77,6 @@ Summarize the result in 2-3 clear helpful lines for the user.
     async def run(self, query):
         t = query.lower()
 
-        # Hard pre-routing — never trust LLM for these unambiguous cases
         if any(k in t for k in ["add column", "drop column", "rename column", "update row", "update all", "fill column"]) and ".db" in t:
             steps = ["modify_db"]
         elif any(k in t for k in ["add column", "drop column", "rename column", "fill column", "assign value"]) and ".csv" in t:
@@ -212,8 +211,15 @@ Summarize the result in 2-3 clear helpful lines for the user.
                     results.append(f"ERROR: Output is not valid CSV:\n{csv_clean[:200]}")
                     break
                 original_rows = self.file_meta.get(csv_name, {}).get("rows", len(lines) - 1)
-                if len(lines) - 1 != original_rows:
-                    results.append(f"ERROR: Row count mismatch — expected {original_rows}, got {len(lines)-1}. File not saved.")
+                new_rows = len(lines) - 1
+
+                # Detect if user intends row change
+                allow_row_change = any(k in query.lower() for k in [
+                    "add", "insert", "append", "remove", "delete", "filter","drop"
+                ])
+
+                if not allow_row_change and new_rows != original_rows:
+                    results.append(f"ERROR: Row count mismatch — expected {original_rows}, got {new_rows}. File not saved.")
                     break
                 self.fa.save(csv_name, csv_clean)
                 import csv as _csv

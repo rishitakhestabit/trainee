@@ -39,8 +39,6 @@ class LLMClient:
                 "structured_output": True,  # keep True for Day 4
             },
         )
-
-
 # -------------------- LOGGING SETUP --------------------
 LOG_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../logs/day4")
@@ -63,7 +61,6 @@ TIME_TAKEN: {duration:.2f} seconds
 
     with open(LOG_FILE, "a") as f:
         f.write(log_entry)
-
 
 # -------------------- MEMORY --------------------
 memory = MemoryManager()
@@ -89,7 +86,6 @@ Use memory ONLY if it is relevant to answering the question.
 If memory is irrelevant, ignore it and answer normally.
 """
 )
-
 # -------------------- MAIN LOOP --------------------
 async def ask_agent():
 
@@ -106,31 +102,24 @@ async def ask_agent():
         context = memory.retrieve_context(user_input)
 
         message = f"""
-MEMORY CONTEXT:
-{context}
+        MEMORY CONTEXT:
+        {context}
 
-USER QUESTION:
-{user_input}
-"""
-
+        USER QUESTION:
+        {user_input}
+        """
         response = await agent.run(
             task=TextMessage(
                 content=message,
                 source="user"
             )
         )
-
         answer = response.messages[-1].content
-
         print(f"\nAGENT: {answer}")
-
         memory.store_interaction(user_input, answer)
-
         end_time = time.time()
         duration = end_time - start_time
-
         write_log(user_input, answer, duration)
-
 
 if __name__ == "__main__":
     asyncio.run(ask_agent())

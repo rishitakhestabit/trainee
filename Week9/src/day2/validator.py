@@ -33,7 +33,7 @@ class ValidatorAgent(RoutedAgent):
             )
         ]
 
-        # Cap output to 300 tokens — validator only needs a short structured reply
+    
         model_result = await self._model_client.create(messages)
         validation_text = str(model_result.content)
 

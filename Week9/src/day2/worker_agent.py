@@ -36,10 +36,6 @@ class WorkerAgent(RoutedAgent):
         model_result = await self._model_client.create(messages)
         result = str(model_result.content)
 
-        # ── Debug Output ───────────────────────────────────────
-        print(f"\n{'='*80}")
-        print(f"Worker-{self.id.key} (Subtask: {message.subtask_id})")
-        print(f"{'-'*80}")
         print(f"{result[:200]}...")
         print(f"{'='*80}\n")
 

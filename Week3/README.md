@@ -12,7 +12,7 @@ The landing page is designed like a SaaS product homepage. It contains a hero se
 
 The landing page is fully responsive and includes subtle animations using Framer Motion and Tailwind CSS transitions. Images are rendered using Next.js Image component.
 
-![Landing Page](screenshots/landing.png)
+![Landing Page](day5/screenshots/landing.png)
 
 ---
 
@@ -20,7 +20,7 @@ The landing page is fully responsive and includes subtle animations using Framer
 
 The about page provides a short introduction to the platform, including a brief description, mission, and vision. The layout is simple, clean, and centered so that the content remains readable and professional.
 
-![About Page](screenshots/about.png)
+![About Page](day5/screenshots/about.png)
 
 ---
 
@@ -28,7 +28,7 @@ The about page provides a short introduction to the platform, including a brief 
 
 The login page contains a static login form with username and password inputs, a remember-me checkbox, and a login button. The page is centered both vertically and horizontally and uses reusable Input and Button components.
 
-![Login Page](screenshots/login.png)
+![Login Page](day5/screenshots/login.png)
 
 ---
 
@@ -38,7 +38,7 @@ The dashboard home page shows summary cards at the top, followed by two charts a
 
 Cards display quick information, charts visualize dummy data, and the table lists sample user records with status badges.
 
-![Dashboard Page](screenshots/dashboard.png)
+![Dashboard Page](day5/screenshots/dashboard.png)
 
 ---
 
@@ -51,7 +51,7 @@ Two charts are displayed on the dashboard:
 
 These charts are implemented using the Recharts library with static dummy data.
 
-![Charts](screenshots/charts.png)
+![Charts](day5/screenshots/charts.png)
 
 ---
 
@@ -59,7 +59,7 @@ These charts are implemented using the Recharts library with static dummy data.
 
 The users page displays a table of users with columns such as name, role, office, age, and status. Status values are shown using Badge components. The table is responsive and scrollable on smaller screens.
 
-![Users Page](screenshots/users.png)
+![Users Page](day5/screenshots/users.png)
 
 ---
 
@@ -67,7 +67,7 @@ The users page displays a table of users with columns such as name, role, office
 
 The profile page displays a user photo, name, position, email, and a short bio. The layout is minimal and focuses only on essential information.
 
-![Profile Page](screenshots/profile.png)
+![Profile Page](day5/screenshots/profile.png)
 
 ---
 

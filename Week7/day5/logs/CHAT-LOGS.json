@@ -1,0 +1,272 @@
+{
+  "default": [
+    {
+      "role": "assistant",
+      "text": "No rows returned.",
+      "time": "2026-02-26T18:33:01.498851"
+    },
+    {
+      "role": "user",
+      "text": "name of users with first name A and from china",
+      "time": "2026-02-26T18:34:18.108988"
+    },
+    {
+      "role": "assistant",
+      "text": "No rows returned.",
+      "time": "2026-02-26T18:34:18.401508"
+    },
+    {
+      "role": "user",
+      "text": "name of users from china",
+      "time": "2026-02-26T18:34:41.760133"
+    },
+    {
+      "role": "assistant",
+      "text": "Returned 9 row(s). Showing first 9:\nColumns: first_name, last_name\n1. first_name=Jenna, last_name=Harding\n2. first_name=Bruce, last_name=Bass\n3. first_name=Don, last_name=Henry\n4. first_name=Dakota, last_name=Bowman\n5. first_name=Isaiah, last_name=Buckley\n6. first_name=Andrea, last_name=Dennis\n7. first_name=Connie, last_name=Mercado\n8. first_name=Sean, last_name=Gray\n9. first_name=Leslie, last_name=Spencer",
+      "time": "2026-02-26T18:34:42.048761"
+    }
+  ],
+  "demo1": [
+    {
+      "time": "2026-03-18T17:32:04.604563",
+      "role": "assistant",
+      "text": "Returned 1 row(s). Showing first 1:\nColumns: COUNT(customer_id)\n1. COUNT(customer_id)=4",
+      "meta": {
+        "sql": "SELECT COUNT(customer_id) FROM customers WHERE country = 'Australia'"
+      }
+    },
+    {
+      "time": "2026-03-18T17:32:04.625035",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.49801313877105713,
+        "faithfulness": 0.5630111694335938,
+        "answer_relevancy": 0.20424453914165497,
+        "hallucination": 0.43698883056640625,
+        "confidence": 0.3673783466219902
+      }
+    },
+    {
+      "time": "2026-03-18T18:35:11.627564",
+      "role": "user",
+      "text": "user names starting with X",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-18T18:35:12.224709",
+      "role": "assistant",
+      "text": "Returned 3 row(s). Showing first 3:\nColumns: first_name, last_name\n1. first_name=Xavier, last_name=Cruz\n2. first_name=Xavier, last_name=Terry\n3. first_name=Xavier, last_name=Mooney",
+      "meta": {
+        "sql": "SELECT first_name, last_name FROM customers WHERE first_name LIKE 'X%' LIMIT 50"
+      }
+    },
+    {
+      "time": "2026-03-18T18:35:12.321803",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.3400694727897644,
+        "faithfulness": 0.35273295640945435,
+        "answer_relevancy": 0.37790897488594055,
+        "hallucination": 0.6472670435905457,
+        "confidence": 0.36215509474277496
+      }
+    }
+  ],
+  "img1": [
+    {
+      "time": "2026-02-26T19:35:33.504863",
+      "role": "assistant",
+      "text": "Here are the most similar images.",
+      "meta": {
+        "hits": [
+          {
+            "rank": 1,
+            "score": 1.0,
+            "source": "src/data/images/just_image_images32(1).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman in a brown coat",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 2,
+            "score": 0.7298384308815002,
+            "source": "src/data/images/just_image_images61.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman standing in the woods",
+            "ocr_text_preview": "wg\nve anu\n\nis *",
+            "path": null
+          },
+          {
+            "rank": 3,
+            "score": 0.6293289661407471,
+            "source": "src/data/images/just_image_images179.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a man sitting in the grass",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 4,
+            "score": 0.5710465312004089,
+            "source": "src/data/images/just_image_images44(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman sitting on a couch with a dog",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 5,
+            "score": 0.5649917125701904,
+            "source": "src/data/images/just_image_images46(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog is sitting on a bench in the garden",
+            "ocr_text_preview": "",
+            "path": null
+          }
+        ]
+      }
+    },
+    {
+      "time": "2026-02-26T19:35:33.708093",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.4500453472137451,
+        "faithfulness": 0.2275625467300415,
+        "answer_relevancy": 0.3026760220527649,
+        "hallucination": 0.7724374532699585,
+        "confidence": 0.3207399845123291
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.570220",
+      "role": "user",
+      "text": "ask-image:text2img",
+      "meta": {
+        "query": "cat",
+        "image_path": null,
+        "top_k": 5
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.604202",
+      "role": "assistant",
+      "text": "Here are the most similar images.",
+      "meta": {
+        "hits": [
+          {
+            "rank": 1,
+            "score": 0.2708011865615845,
+            "source": "src/data/images/just_image_gettyimages-827755050-f4d5cb0f82b8e112b198b924c5b36311ddf3d92a.jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a cat laying on a bed with its eyes closed",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 2,
+            "score": 0.22053933143615723,
+            "source": "src/data/images/just_image_6f19c26d-ddf2-4b4b-9d95-afb97cfd3a01.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a tablet with a blank screen on a white desk with office supplies",
+            "ocr_text_preview": "shutterstsck:",
+            "path": null
+          },
+          {
+            "rank": 3,
+            "score": 0.21177434921264648,
+            "source": "src/data/images/just_image_images46(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog is sitting on a bench in the garden",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 4,
+            "score": 0.20977449417114258,
+            "source": "src/data/images/just_image_images44(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a woman sitting on a couch with a dog",
+            "ocr_text_preview": "",
+            "path": null
+          },
+          {
+            "rank": 5,
+            "score": 0.20935043692588806,
+            "source": "src/data/images/just_image_images45(4).jpg.jpg",
+            "page": null,
+            "kind": "image",
+            "caption": "a dog with a blue coat",
+            "ocr_text_preview": "",
+            "path": null
+          }
+        ]
+      }
+    },
+    {
+      "time": "2026-02-26T19:36:40.719052",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "context_match": 0.24787428975105286,
+        "faithfulness": 0.19524624943733215,
+        "answer_relevancy": 0.08907793462276459,
+        "hallucination": 0.8047537505626678,
+        "confidence": 0.15531910210847855
+      }
+    }
+  ],
+  "demo": [
+    {
+      "time": "2026-03-27T16:12:32.706639",
+      "role": "assistant",
+      "text": "Week 5 is about Server Side Foundations with Docker & DevOps Basics. The objective is to help interns understand how production servers work by using Docker to simulate deployment environments locally. The topics covered include Docker Fundamentals, Linux Internals, images, containers, volumes, networks, and basic container OS operations.",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-27T16:12:32.707358",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "confidence": 0.8,
+        "latency": 0.175
+      }
+    },
+    {
+      "time": "2026-03-29T18:35:54.059922",
+      "role": "user",
+      "text": "what is the content in week-3",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-29T18:35:58.690250",
+      "role": "assistant",
+      "text": "The content in Week 3 includes:\n\n1. Next.js Fundamentals: \n   - File-based routing\n   - App Router\n   - Pages\n   - Routing\n   - Layouts\n   - Image optimization\n   - SSR vs CSR basics\n\n2. TailwindCSS: \n   - Utility-first design\n   - Responsive components\n   - Reusable design system\n\nHands-on exercises and deliverables include:\n- Tailwind Setup\n- Converting Figma/screenshot into Tailwind components\n- Component System Design (building Button, Card, Modal, Avatar, Badge)\n- Next.js Routing (multi-page project with shared layout)\n- Replicating a SaaS landing page\n- Creating a reusable component library (ui/ library)",
+      "meta": {}
+    },
+    {
+      "time": "2026-03-29T18:35:58.691533",
+      "role": "evaluation",
+      "text": "scores",
+      "meta": {
+        "confidence": 1.0,
+        "faithfulness": 1.0,
+        "context_relevance": 1.0,
+        "hallucination": 0,
+        "latency": 1.026
+      }
+    }
+  ]
+}

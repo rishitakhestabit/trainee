@@ -10,7 +10,7 @@ User → Planner → Worker Agents (Parallel) → Reflection Agent → Validator
 This system demonstrates task decomposition, parallel execution, result synthesis, and validation.
 
 ---
-![Output](../../ss/day2/output.png)
+![Output](../ss/day2/output.png)
 
 ## Concepts Implemented
 
@@ -123,7 +123,7 @@ Behavior:
   workers → reflection → validation
 
 Screenshot:
-![Planner](../../ss/day2/planner.png)
+![Planner](../ss/day2/planner.png)
 
 ---
 
@@ -155,7 +155,7 @@ Behavior:
 - Improves quality
 
 Screenshot:
-![Reflection](../../ss/day2/reflection.png)
+![Reflection](../ss/day2/reflection.png)
 
 ---
 
@@ -205,7 +205,7 @@ Logs:
 - Timestamped files generated
 
 Screenshot:
-![Execution](../../ss/day2/process.png)
+![Execution](../ss/day2/process.png)
 
 ---
 

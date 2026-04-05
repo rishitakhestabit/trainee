@@ -1,6 +1,6 @@
 # DAY 4 — MEMORY-POWERED AGENT 
 
-![Output](../../ss/day4/output1.png)
+![Output](../ss/day4/output1.png)
 
 ## 1. Executive Summary
 
@@ -222,10 +222,10 @@ Used to:
 ## 10. Screenshots
 
 ### Output View
-![Output](../../ss/day4/output1.png)
+![Output](../ss/day4/output1.png)
 
 ### Alternate Output
-![Output1](../../ss/day4/output.png)
+![Output1](../ss/day4/output.png)
 
 ---
 

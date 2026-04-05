@@ -6,12 +6,12 @@
 
 ## PROJECT STRUCTURE (Screenshots)
 
-![CLI Output 1](../../ss/day5/outputcli.png) 
-![CLI Output2](../../ss/day5/outputcli2.png) 
-![Query CSVUploaded](../../ss/day5/outputquerycsvuploaded.png) 
-![StreamlitUI](../../ss/day5/streamly.png) 
+![CLI Output 1](../ss/day5/outputcli.png) 
+![CLI Output2](../ss/day5/outputcli2.png) 
+![Query CSVUploaded](../ss/day5/outputquerycsvuploaded.png) 
+![StreamlitUI](../ss/day5/streamly.png) 
 ![UI](../../ss/day5/ui.png) 
-![UploadedCSV](../../ss/day5/uploadedcsv.png)
+![UploadedCSV](../ss/day5/uploadedcsv.png)
 
 ------------------------------------------------------------------------
 
@@ -273,4 +273,4 @@ Generates final response
 System returns final answer to user
 
 
-![ARchitecture](../../ss/day5/architecture.svg)
+![ARchitecture](../ss/day5/architecture.svg)

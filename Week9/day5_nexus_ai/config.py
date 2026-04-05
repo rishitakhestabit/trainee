@@ -11,4 +11,4 @@ LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE_PATH = LOG_DIR / "nexus-ai.log"
 
 MAX_RETRIES_PER_AGENT = 1
-MAX_PLAN_RETRIES = 1
+MAX_PLAN_RETRIES = 2

@@ -6,7 +6,7 @@
 
 ## PROJECT STRUCTURE (Screenshots)
 
-![CLI](../../ss/day3/cli.png) 
+![CLI](../ss/day3/cli.png) 
 
 ------------------------------------------------------------------------
 

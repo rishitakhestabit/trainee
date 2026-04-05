@@ -113,17 +113,6 @@ def print_results(results):
             except Exception as e:
                 print(f" Failed to save code: {e}")
 
-        #  SAVE REPORT FILE
-        if agent_name == "Reporter" and output.strip():
-            file_path = os.path.join(OUTPUT_DIR, "final_report.md")
-            try:
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(output)
-                print(f"\n Report saved to: {file_path}")
-            except Exception as e:
-                print(f" Failed to save report: {e}")
-
-
 async def run_nexus(query, clear_output=False):
 
     print("\n" + "=" * 60)
@@ -185,8 +174,13 @@ async def main():
         if query.lower() in ["exit", "quit"]:
             print("Shutting down Nexus AI.")
             break
+        if query.lower() == "clear":
+            clear_output_dir()
+            print(" Output directory cleared.\n")
+            continue
 
-        clear = input("Clear previous output? (y/n): ").strip().lower() == "y"
+        # Default: no clearing
+        clear = False
 
         try:
             result = await run_nexus(query, clear)

@@ -28,7 +28,7 @@ Based on Week 9 requirements:
 
 ## Project Structure
 
-src/
+
  └── agents/
       ├── research_agent.py
       ├── summarizer_agent.py

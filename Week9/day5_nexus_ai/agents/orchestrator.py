@@ -320,10 +320,23 @@ async def execute_plan(execution_plan, user_query):
             global_context[res["agent"]] = res["output"]
 
             if res["agent"] == "Validator":
-                if "FAIL" in res["output"].upper() or "REJECTED" in res["output"].upper():
-                    print("⚠️ Validation failed — continuing to Reporter")
+
+                try:
+                    val = json.loads(res["output"])
+                    verdict = val.get("final_verdict", "").upper()
+                except:
+                    verdict = res["output"].upper()
+
+                if verdict == "REJECTED":
+                    print(" Validation FAILED — stopping or replanning")
                     global_context["validator_feedback"] = res["output"]
                     continue
+
+                elif verdict == "CONDITIONAL":
+                    print(" Validation CONDITIONAL — continuing")
+
+                elif verdict == "APPROVED":
+                    print(" Validation PASSED")
 
     # ── Python backend saves all files ───────────────────────────────────────
     save_outputs(global_context, user_query)

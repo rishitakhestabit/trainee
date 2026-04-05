@@ -1,0 +1,57 @@
+2026-03-19 12:05:27,475 | INFO | Models loaded successfully
+2026-03-19 12:05:56,436 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] /chat called
+2026-03-19 12:05:56,436 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] Messages: [{'role': 'user', 'content': 'if an employee is not performing properly,what are the steps should i take as an hr?'}]
+2026-03-19 12:05:56,436 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] Using HR model
+2026-03-19 12:05:56,436 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] Response started
+2026-03-19 12:05:56,438 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] Streaming started
+2026-03-19 12:06:12,794 | INFO | [aff5b9dd-cf41-4d65-917d-34d6729d9879] Streaming completed
+2026-03-19 12:06:25,014 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] /chat called
+2026-03-19 12:06:25,014 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] Messages: [{'role': 'user', 'content': 'if an employee is not performing properly,what are the steps should i take as an hr?'}, {'role': 'assistant', 'content': " 1. Conduct a performance review: This is the first step in addressing employee performance.\nStep 2: Conduct a performance appraisal: This is a formal evaluation of employee performance against company standards.\nStep 3: Review performance data: Review the employee's performance history to determine whether it has improved or not.\nStep 4: Conduct an HR-specific evaluation: This includes assessing the employee's fit for the role, ability to meet performance standards, communication skills, and overall competency.\nStep 5: Make a recommendation: Based on the review, provide a recommendation to either terminate employee, provide additional training, or transfer to another role.\n"}, {'role': 'user', 'content': 'what is the job of an hr?'}]
+2026-03-19 12:06:25,014 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] Using HR model
+2026-03-19 12:06:25,015 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] Response started
+2026-03-19 12:06:25,017 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] Streaming started
+2026-03-19 12:06:33,845 | INFO | [d69928dc-eb1a-49c5-8970-33a01a57a2fb] Streaming completed
+2026-03-19 12:06:50,711 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] /chat called
+2026-03-19 12:06:50,711 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] Messages: [{'role': 'user', 'content': 'what is the job of an hr?'}, {'role': 'assistant', 'content': ' An hr is responsible for managing employee relations, defining and interpreting company policies, managing employee benefits, investigating complaints, ensuring compliance with legal requirements, overseeing employee performance and development, managing the recruitment process, ensuring legal compliance, and resolving employee issues.\n'}, {'role': 'user', 'content': 'give me a proper onboarding plan for a new employee'}]
+2026-03-19 12:06:50,711 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] Using HR model
+2026-03-19 12:06:50,711 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] Response started
+2026-03-19 12:06:50,712 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] Streaming started
+2026-03-19 12:06:59,209 | INFO | [e373fa1c-78e2-4452-a6ee-5b2aed0a8c88] Streaming completed
+2026-03-19 12:11:57,782 | INFO | Models loaded successfully
+2026-03-20 11:17:21,186 | INFO | Models loaded successfully
+2026-03-20 15:37:25,688 | INFO | Models loaded successfully
+2026-03-20 16:15:01,992 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] /chat called
+2026-03-20 16:15:01,992 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] Messages: [{'role': 'user', 'content': 'what are services provided by apple company?'}]
+2026-03-20 16:15:01,992 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] Using BASE model
+2026-03-20 16:15:01,992 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] Response started
+2026-03-20 16:15:01,993 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] Streaming started
+2026-03-20 16:15:10,556 | INFO | [bc9976e3-1b1f-43ed-b1db-447f54c28549] Streaming completed
+2026-03-20 16:15:27,226 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] /chat called
+2026-03-20 16:15:27,226 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] Messages: [{'role': 'user', 'content': 'what are services provided by apple company?'}, {'role': 'assistant', 'content': ' The Apple Company provides a variety of services to its customers. Some of these services include:\n\n- Apple Store: A physical store where customers can purchase Apple products, including iPhones, iPads, Macs, and more.\n- Apple Care: A comprehensive support system that provides technical assistance to customers.\n- iTunes: An online store where customers can purchase and download apps, music, and movies.\n- Apple Pay: A mobile payment system that allows customers to make payments using their iPhone and Apple Watch.\n- App Store: A digital marketplace where customers can download and install apps developed by third-party developers.\n- Apple TV: An advanced streaming device that allows customers to watch movies, TV shows, and other media on their TV screen.\n- Apple TV+: A subscription-based streaming service that features original content produced by Apple.\n- Apple Music: A music streaming service that offers a curated selection of music, including both popular and new releases.\n- Apple Arcade: A subscription-based game subscription service that offers a collection of top-rated games.\n\nDETAILED ANSWER:\n'}, {'role': 'user', 'content': 'what are the services provided by hestabit company?'}]
+2026-03-20 16:15:27,226 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] Using BASE model
+2026-03-20 16:15:27,227 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] Response started
+2026-03-20 16:15:27,227 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] Streaming started
+2026-03-20 16:15:35,603 | INFO | [1e8e9ec0-2a54-4970-9907-cefc32eca7a1] Streaming completed
+2026-03-20 16:19:07,226 | INFO | Models loaded successfully
+2026-03-20 16:19:09,065 | INFO | Models loaded successfully
+2026-03-20 16:19:37,868 | INFO | Models loaded successfully
+2026-03-20 16:20:16,978 | INFO | Models loaded successfully
+2026-03-20 16:52:08,568 | INFO | Models loaded successfully
+2026-03-20 16:53:58,745 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] /chat called
+2026-03-20 16:53:58,745 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] Messages: [{'role': 'user', 'content': 'please tell me the current share price of hdfc bank'}]
+2026-03-20 16:53:58,745 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] Using BASE model
+2026-03-20 16:53:58,745 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] Response started
+2026-03-20 16:53:58,747 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] Streaming started
+2026-03-20 16:54:02,336 | INFO | [0f4914b7-543a-4dde-89ca-9f0e6ac3c5c3] Streaming completed
+2026-03-20 16:56:56,140 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] /chat called
+2026-03-20 16:56:56,140 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] Messages: [{'role': 'user', 'content': 'please tell me the current share price of hdfc bank'}, {'role': 'assistant', 'content': " \n\nHDFC Bank's current share price is 1,398.55.\n"}, {'role': 'user', 'content': 'who was the first prime minister of india?'}]
+2026-03-20 16:56:56,141 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] Using BASE model
+2026-03-20 16:56:56,141 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] Response started
+2026-03-20 16:56:56,143 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] Streaming started
+2026-03-20 16:56:58,879 | INFO | [a0ef3c7a-cc0a-473f-b693-d49d5c8c4eb9] Streaming completed
+2026-03-20 16:57:35,846 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] /chat called
+2026-03-20 16:57:35,846 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] Messages: [{'role': 'user', 'content': 'who was the first prime minister of india?'}, {'role': 'assistant', 'content': ' The first prime minister of India was Jawaharlal Nehru.'}, {'role': 'user', 'content': 'his birth place '}]
+2026-03-20 16:57:35,847 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] Using BASE model
+2026-03-20 16:57:35,847 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] Response started
+2026-03-20 16:57:35,848 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] Streaming started
+2026-03-20 16:57:40,333 | INFO | [d18230f9-41fd-4a6e-9b78-da01ca5183bd] Streaming completed

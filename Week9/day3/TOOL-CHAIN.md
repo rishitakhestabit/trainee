@@ -6,7 +6,17 @@
 
 ## PROJECT STRUCTURE (Screenshots)
 
-![CLI](../ss/day3/cli.png) 
+![Input Streamlit](../ss/day3/inputstreamlit.png)
+
+![Output Streamlit](../ss/day3/outputstreamlit.png)
+
+![CLI](../ss/day3/cli.png)
+
+![Entries Test](../ss/day3/entriestest.png)
+
+![Streamlit PDF Upload](../ss/day3/streamlitpdfupload.png)
+
+![Test Code](../ss/day3/testcode.png)
 
 ------------------------------------------------------------------------
 

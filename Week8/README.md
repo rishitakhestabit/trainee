@@ -222,6 +222,7 @@ This project showcases a complete pipeline from data preparation to deployment, 
 ## Note on Model Files
 
 The `quantized/` directory is not included in this repository due to large file size limitations.
+Quantized folder- https://drive.google.com/drive/folders/1N9QqHEreTNRh80YCrMLcXr_34Tld9wyd?usp=sharing
 
 However, the folder exists locally and was used during:
 - Quantisation (Day 3)
@@ -246,6 +247,4 @@ All results, benchmarks, and deployment outputs in this project were generated u
 
 ---
 
-# Add this line in FINAL-REPORT.md
-
-Note: Quantized model files are not included in the repository due to size constraints but were used during benchmarking and deployment.
+Quantized folder- https://drive.google.com/drive/folders/1N9QqHEreTNRh80YCrMLcXr_34Tld9wyd?usp=sharing
